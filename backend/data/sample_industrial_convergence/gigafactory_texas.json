@@ -1,0 +1,29 @@
+{
+  "facility_id": "gigafactory-texas",
+  "corridor": "Texas_Defense_Hub",
+  "location": { "lat": 30.2223, "lon": -97.6171, "address": "Austin, TX" },
+  "retooling_metrics": {
+    "legacy_sector": "EV Assembly",
+    "dual_use_target": "Autonomous Surface Vessel Modules",
+    "line_flexibility_score": 0.78,
+    "cots_component_overlap_pct": 57
+  },
+  "robotics_profile": {
+    "robot_density_per_10k_sqft": 26.1,
+    "embodied_ai_adoption_level": "Scaled",
+    "peak_robotics_kw_draw": 5400,
+    "throughput_multiplier": 1.6
+  },
+  "energy_profile": {
+    "iso_rto_region": "ERCOT",
+    "substation_capacity_mw": 220,
+    "facility_base_load_mw": 140,
+    "onsite_microgrid_installed": true,
+    "energy_bottleneck_flag": false
+  },
+  "macro_yield": {
+    "estimated_annual_output_usd": 890000000,
+    "labor_productivity_delta_pct": 11.2,
+    "forecast_horizon_years": 7
+  }
+}

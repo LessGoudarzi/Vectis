@@ -13,10 +13,19 @@ All research agents must format their facility-level data using the following JS
   "$schema": "[https://json-schema.org/draft/2020-12/schema](https://json-schema.org/draft/2020-12/schema)",
   "title": "IndustrialConvergencePayload",
   "type": "object",
-  "required": ["facility_id", "corridor", "retooling_metrics", "robotics_profile", "energy_profile", "macro_yield"],
+  "required": ["facility_id", "corridor", "location", "retooling_metrics", "robotics_profile", "energy_profile", "macro_yield"],
   "properties": {
     "facility_id": { "type": "string" },
     "corridor": { "type": "string", "enum": ["Midwest_Auto", "Texas_Defense_Hub", "Southeast_Aerospace", "Ohio_River_Industrial"] },
+    "location": {
+      "type": "object",
+      "required": ["lat", "lon"],
+      "properties": {
+        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+        "address": { "type": "string" }
+      }
+    },
     "retooling_metrics": {
       "type": "object",
       "properties": {

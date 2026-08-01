@@ -1,0 +1,29 @@
+{
+  "facility_id": "detroit-assembly-complex",
+  "corridor": "Midwest_Auto",
+  "location": { "lat": 42.3664, "lon": -82.9780, "address": "Detroit, MI" },
+  "retooling_metrics": {
+    "legacy_sector": "Automotive Stamping/Welding",
+    "dual_use_target": "Uncrewed Ground Vehicle Chassis",
+    "line_flexibility_score": 0.62,
+    "cots_component_overlap_pct": 41
+  },
+  "robotics_profile": {
+    "robot_density_per_10k_sqft": 18.4,
+    "embodied_ai_adoption_level": "Pilot",
+    "peak_robotics_kw_draw": 3200,
+    "throughput_multiplier": 1.35
+  },
+  "energy_profile": {
+    "iso_rto_region": "MISO",
+    "substation_capacity_mw": 85,
+    "facility_base_load_mw": 61,
+    "onsite_microgrid_installed": false,
+    "energy_bottleneck_flag": true
+  },
+  "macro_yield": {
+    "estimated_annual_output_usd": 420000000,
+    "labor_productivity_delta_pct": 6.5,
+    "forecast_horizon_years": 5
+  }
+}

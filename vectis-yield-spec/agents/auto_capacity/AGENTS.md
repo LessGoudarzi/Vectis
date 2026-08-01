@@ -14,4 +14,5 @@ Specialized Skills & Responsibilities:
 - Parse OEM SEC filings, investor presentations, and regional manufacturing footprints.
 - Map automotive Bill-of-Materials (BOM) to assess dual-use manufacturing flexibility.
 - Calculate assembly line adaptability for converting auto stamping/welding lines to defense drone airframes and uncrewed hardware.
+- Resolve each `facility_id` to a `location.lat` / `location.lon` pair before submission — payloads missing coordinates will fail schema validation and cannot be rendered on the map.
 - Produce the 'Auto Retooling & Capacity Utilization Feed' for `agent-ceo`.

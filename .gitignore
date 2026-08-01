@@ -1,10 +1,21 @@
 .DS_Store
 .venv/
+__pycache__/
+node_modules/
+frontend/dist/
+.env
+.env.local
 
 # Generated/local runtime artifacts
 power/transmission.db
 power/tmp_trans_lines.geojson
 power/sample_data.json
+
+# Real EIA/HIFLD data + generated db (large; regenerate via
+# power/ingest_to_sqlite.py + backend/ingest_power_grid.py)
+/transmission.db
+/plant_power_eia_v9.json
+/transmission_line_eia_v1.json
 
 # Large downloaded source artifacts (re-download when needed)
 power/*_eia_v*.zip

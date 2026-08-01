@@ -4,6 +4,7 @@ from pathlib import Path
 import duckdb
 
 from config import settings
+from ingest_auto_plants import build_auto_plants_table
 from ingest_industrial_convergence import build_industrial_convergence_table
 from ingest_power_grid import build_power_grid_tables
 
@@ -12,6 +13,7 @@ logger = logging.getLogger("uvicorn")
 BASE_DIR = Path(__file__).resolve().parent
 SAMPLE_INDUSTRIAL_CONVERGENCE_DIR = BASE_DIR / "data" / "sample_industrial_convergence"
 POWER_GRID_SQLITE_DB = BASE_DIR.parent / "transmission.db"
+AUTO_PLANTS_JSON = BASE_DIR.parent / "auto_facilities_VECA8.json"
 
 
 class SpatialDatabase:
@@ -22,24 +24,16 @@ class SpatialDatabase:
     def _init_spatial(self):
         logger.info("Initializing DuckDB Spatial Extension...")
         self.conn.execute("INSTALL spatial; LOAD spatial;")
-        self._seed_mock_layers()
+        self._seed_auto_plants()
         self._seed_power_grid()
         self._seed_industrial_convergence()
 
-    def _seed_mock_layers(self):
-        # Layer 1: Automobile Assembly Plants (still mock — no real
-        # per-facility dataset for this yet, unlike power_grid/power_plants)
-        self.conn.execute('''
-            CREATE TABLE IF NOT EXISTS auto_plants AS
-            SELECT id, name, brand, capacity, ST_Point(lon, lat) as geom
-            FROM (VALUES
-                (1, 'Detroit Assembly Complex', 'Stellantis', 350000, -82.9780, 42.3664),
-                (2, 'Smyrna Assembly Plant', 'Nissan', 640000, -86.5186, 35.9828),
-                (3, 'Gigafactory Texas', 'Tesla', 500000, -97.6171, 30.2223),
-                (4, 'Chattanooga Plant', 'Volkswagen', 250000, -85.1328, 35.0806),
-                (5, 'Greer Plant', 'BMW', 450000, -82.2263, 34.8958)
-            ) AS t(id, name, brand, capacity, lon, lat);
-        ''')
+    def _seed_auto_plants(self):
+        # Layer: real U.S. automobile assembly/component facilities
+        # (72 facilities, incl. defense-conversion research notes),
+        # replacing the old 5-row hardcoded mock.
+        count = build_auto_plants_table(self.conn, AUTO_PLANTS_JSON)
+        logger.info(f"Loaded {count} automobile facilities from {AUTO_PLANTS_JSON}")
 
     def _seed_power_grid(self):
         # Layers 2 & 3: real EIA/HIFLD transmission-line and power-plant

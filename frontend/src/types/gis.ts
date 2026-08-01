@@ -15,6 +15,20 @@ export interface LegendEntry {
   colorHex: string;
 }
 
+// Mirrors backend/ingest_auto_plants.py's auto_plants table columns
+export interface AutoPlantProperties {
+  id: number;
+  facility_name: string;
+  oem_or_parent: string;
+  facility_type: string;
+  state: string;
+  status: string;
+  products: string | null;
+  approximate_employment: number | null;
+  annual_capacity_estimate: string | null;
+  conversion_summary: string | null;
+}
+
 // Mirrors backend/ingest_power_grid.py's power_grid table columns
 export interface TransmissionLineProperties {
   id: number;

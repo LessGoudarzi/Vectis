@@ -54,9 +54,23 @@ export function fuelColorHex(fuelType: string | null | undefined): string {
   return FUEL_COLOR_BY_LABEL[fuelType ?? ''] ?? '#64748b';
 }
 
+// Matches the facility_type values in auto_facilities_VECA8.json
 export const AUTO_PLANTS_LEGEND: LegendEntry[] = [
-  { label: 'Assembly plant', colorHex: '#F59E0B' },
+  { label: 'Assembly', colorHex: '#F59E0B' },
+  { label: 'Battery', colorHex: '#22c55e' },
+  { label: 'Engine', colorHex: '#ef4444' },
+  { label: 'Transmission', colorHex: '#3b82f6' },
+  { label: 'Body/Stamping', colorHex: '#a855f7' },
+  { label: 'Other Major Component', colorHex: '#64748b' },
 ];
+
+const AUTO_PLANTS_COLOR_BY_LABEL: Record<string, string> = Object.fromEntries(
+  AUTO_PLANTS_LEGEND.map((entry) => [entry.label, entry.colorHex])
+);
+
+export function autoPlantColorHex(facilityType: string | null | undefined): string {
+  return AUTO_PLANTS_COLOR_BY_LABEL[facilityType ?? ''] ?? '#64748b';
+}
 
 export const INDUSTRIAL_CONVERGENCE_LEGEND: LegendEntry[] = [
   { label: 'Facility', colorHex: '#A855F7' },
@@ -89,7 +103,8 @@ export function getFeatureCategoryLabel(layerId: LayerId, properties: any): stri
     case 'industrial-convergence':
       return properties?.energy_bottleneck_flag ? 'Energy bottleneck' : 'Facility';
     case 'auto-plants':
+      return AUTO_PLANTS_COLOR_BY_LABEL[properties?.facility_type] ? properties.facility_type : 'Other Major Component';
     default:
-      return 'Assembly plant';
+      return 'Unknown';
   }
 }

@@ -1,7 +1,7 @@
 import { GeoJsonLayer } from '@deck.gl/layers';
 import { LayerConfig, LayerId } from '../types/gis';
-import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties, SubstationProperties } from '../types/gis';
-import { fuelColorHex, voltageBucketColorHex, getFeatureCategoryLabel } from '../legends';
+import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties, SubstationProperties, AutoPlantProperties } from '../types/gis';
+import { fuelColorHex, voltageBucketColorHex, autoPlantColorHex, getFeatureCategoryLabel } from '../legends';
 
 const hexToRgb = (hex: string): [number, number, number] => {
   const num = parseInt(hex.replace('#', ''), 16);
@@ -43,9 +43,15 @@ export function createDeckGLLayers(
             data,
             pickable: true,
             opacity: config.opacity,
-            pointRadiusScale: 10,
+            // Colored by facility_type (see legends.ts's AUTO_PLANTS_LEGEND) —
+            // Assembly / Battery / Engine / Transmission / Body-Stamping /
+            // Other Major Component, matching the real data's categories.
             pointRadiusMinPixels: 6,
-            getFillColor: [...rgb, 220],
+            pointRadiusMaxPixels: 6,
+            getFillColor: (f: any) => {
+              const props = f.properties as AutoPlantProperties;
+              return [...hexToRgb(autoPlantColorHex(props.facility_type)), 220];
+            },
             getLineColor: [255, 255, 255, 255],
             getLineWidth: 2,
             lineWidthMinPixels: 2,

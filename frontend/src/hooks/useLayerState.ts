@@ -5,7 +5,7 @@ import { LAYER_LEGENDS } from '../legends';
 export const INITIAL_LAYERS: LayerConfig[] = [
   { id: 'power-grid', name: 'Transmission Lines', visible: true, opacity: 0.8, colorHex: '#06B6D4', zIndex: 1, legendVisible: true },
   { id: 'substations', name: 'Substations', visible: true, opacity: 0.9, colorHex: '#FBBF24', zIndex: 2, legendVisible: true },
-  { id: 'auto-plants', name: 'Automobile Assembly Plants', visible: true, opacity: 0.9, colorHex: '#F59E0B', zIndex: 3, legendVisible: false },
+  { id: 'auto-plants', name: 'Automobile Manufacturing Facilities', visible: true, opacity: 0.9, colorHex: '#F59E0B', zIndex: 3, legendVisible: true },
   { id: 'power-plants', name: 'Power Plants', visible: true, opacity: 0.9, colorHex: '#22C55E', zIndex: 4, legendVisible: true },
   { id: 'industrial-convergence', name: 'Industrial Convergence Facilities', visible: true, opacity: 0.9, colorHex: '#A855F7', zIndex: 5, legendVisible: false },
 ];

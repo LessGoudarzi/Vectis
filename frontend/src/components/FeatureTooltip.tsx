@@ -1,10 +1,20 @@
 import React from 'react';
+import { X } from 'lucide-react';
+import { LayerId } from '../types/gis';
+import { getFeatureOwners } from '../owners';
 
 interface FeatureTooltipProps {
   x: number;
   y: number;
   layerId: string;
   properties: Record<string, any>;
+  // Hover tooltips (pinned=false) are transient and can't hold clickable
+  // actions — the cursor leaving the feature to reach a button would hide
+  // them first. Click promotes a feature to "pinned": it stays open and
+  // pointer-events-auto, so the owner-filter buttons are actually usable.
+  pinned?: boolean;
+  onFilterOwner?: (owner: string) => void;
+  onClose?: () => void;
 }
 
 // `geom` duplicates the feature's own geometry as a WKT string (DuckDB's
@@ -36,16 +46,36 @@ function formatValue(key: string, value: unknown): string {
   return String(value);
 }
 
-export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ x, y, layerId, properties }) => {
+export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
+  x,
+  y,
+  layerId,
+  properties,
+  pinned = false,
+  onFilterOwner,
+  onClose,
+}) => {
   const entries = Object.entries(properties ?? {}).filter(([key]) => !HIDDEN_KEYS.has(key));
+  const owners = pinned ? getFeatureOwners(layerId as LayerId, properties) : [];
 
   return (
     <div
-      className="absolute z-30 pointer-events-none max-w-xs rounded-lg border border-slate-700 bg-slate-900/95 p-3 text-xs text-white shadow-xl backdrop-blur-md"
+      className={`absolute z-30 max-w-xs rounded-lg border p-3 text-xs text-white shadow-xl backdrop-blur-md ${
+        pinned
+          ? 'pointer-events-auto border-cyan-500/60 bg-slate-900'
+          : 'pointer-events-none border-slate-700 bg-slate-900/95'
+      }`}
       style={{ left: x + 12, top: y + 12 }}
     >
-      <div className="mb-1.5 border-b border-slate-700/60 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-cyan-400">
-        {layerId.replace(/-/g, ' ')}
+      <div className="mb-1.5 flex items-center justify-between border-b border-slate-700/60 pb-1.5">
+        <span className="text-[11px] font-bold uppercase tracking-wide text-cyan-400">
+          {layerId.replace(/-/g, ' ')}
+        </span>
+        {pinned && onClose && (
+          <button onClick={onClose} className="text-slate-400 hover:text-white" title="Close">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
       <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
         {entries.map(([key, value]) => (
@@ -55,6 +85,20 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({ x, y, layerId, p
           </React.Fragment>
         ))}
       </dl>
+
+      {owners.length > 0 && onFilterOwner && (
+        <div className="mt-2.5 space-y-1 border-t border-slate-700/40 pt-2">
+          {owners.map((owner) => (
+            <button
+              key={owner}
+              onClick={() => onFilterOwner(owner)}
+              className="block w-full truncate rounded bg-cyan-500/15 px-2 py-1 text-left text-[11px] font-medium text-cyan-300 hover:bg-cyan-500/25"
+            >
+              Filter to: {owner}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

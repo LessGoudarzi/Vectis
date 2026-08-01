@@ -6,6 +6,7 @@ import { useGISData } from '../hooks/useGISData';
 import { createDeckGLLayers } from '../layers/layerFactory';
 import { LayerManager } from './LayerManager';
 import { FeatureTooltip } from './FeatureTooltip';
+import { OwnerSearch } from './OwnerSearch';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const INITIAL_VIEW_STATE = {
@@ -23,11 +24,18 @@ export const GISMapContainer: React.FC = () => {
     useLayerState();
   const { datasets } = useGISData();
   const [hoverInfo, setHoverInfo] = useState<any>(null);
+  const [pinnedInfo, setPinnedInfo] = useState<any>(null);
+  const [ownerQuery, setOwnerQuery] = useState('');
 
   const deckLayers = useMemo(
-    () => createDeckGLLayers(layers, datasets, categoryFilters, setHoverInfo),
-    [layers, datasets, categoryFilters]
+    () => createDeckGLLayers(layers, datasets, categoryFilters, ownerQuery, setHoverInfo),
+    [layers, datasets, categoryFilters, ownerQuery]
   );
+
+  const handleFilterOwner = (owner: string) => {
+    setOwnerQuery(owner);
+    setPinnedInfo(null);
+  };
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-slate-950">
@@ -41,11 +49,14 @@ export const GISMapContainer: React.FC = () => {
         onSetAllCategories={setAllCategories}
       />
 
+      <OwnerSearch layers={layers} datasets={datasets} query={ownerQuery} onQueryChange={setOwnerQuery} />
+
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
         layers={deckLayers}
         getCursor={({ isHovering }) => (isHovering ? 'pointer' : 'default')}
+        onClick={(info) => setPinnedInfo(info?.object ? info : null)}
       >
         <Map
           mapboxAccessToken={MAPBOX_TOKEN}
@@ -54,12 +65,24 @@ export const GISMapContainer: React.FC = () => {
         />
       </DeckGL>
 
-      {hoverInfo?.object && (
+      {!pinnedInfo && hoverInfo?.object && (
         <FeatureTooltip
           x={hoverInfo.x}
           y={hoverInfo.y}
           layerId={hoverInfo.layer?.id ?? ''}
           properties={hoverInfo.object.properties}
+        />
+      )}
+
+      {pinnedInfo?.object && (
+        <FeatureTooltip
+          x={pinnedInfo.x}
+          y={pinnedInfo.y}
+          layerId={pinnedInfo.layer?.id ?? ''}
+          properties={pinnedInfo.object.properties}
+          pinned
+          onFilterOwner={handleFilterOwner}
+          onClose={() => setPinnedInfo(null)}
         />
       )}
     </div>

@@ -52,6 +52,40 @@ def _reproject_geometry(geometry: dict) -> dict:
     return {**geometry, "coordinates": _reproject_coords(geometry["coordinates"])}
 
 
+_EARTH_RADIUS_MILES = 3958.7613
+
+
+def _haversine_miles(lon1: float, lat1: float, lon2: float, lat2: float) -> float:
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
+    return 2 * _EARTH_RADIUS_MILES * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def _geometry_length_miles(geometry: dict) -> float:
+    """Geodesic length via Haversine, summed vertex-to-vertex. Computed
+    ourselves rather than via DuckDB's ST_Length_Spheroid, which returns
+    NaN for roughly half of this real dataset's (structurally ordinary,
+    non-degenerate) MultiLineStrings for reasons that didn't turn up an
+    an obvious root cause on inspection - not worth depending on.
+    """
+    geom_type = geometry.get("type")
+    coordinates = geometry.get("coordinates") or []
+    if geom_type == "LineString":
+        parts = [coordinates]
+    elif geom_type == "MultiLineString":
+        parts = coordinates
+    else:
+        return 0.0
+
+    total = 0.0
+    for part in parts:
+        for (lon1, lat1), (lon2, lat2) in zip(part, part[1:]):
+            total += _haversine_miles(lon1, lat1, lon2, lat2)
+    return total
+
+
 def _load_sqlite_rows(sqlite_db_path: Path, table: str, columns: list[str]) -> list[tuple]:
     conn = sqlite3.connect(str(sqlite_db_path))
     conn.row_factory = sqlite3.Row
@@ -76,7 +110,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         """
         CREATE TABLE power_grid (
             id INTEGER, owner TEXT, voltage INTEGER, volt_class TEXT,
-            status TEXT, line_type TEXT, geom GEOMETRY
+            status TEXT, line_type TEXT, length_miles DOUBLE, geom GEOMETRY
         )
         """
     )
@@ -108,14 +142,18 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         sqlite_db_path, "transmission_lines", ["id", "owner", "voltage", "volt_class", "status", "line_type"]
     )
     if line_rows:
+        reprojected_lines = [
+            (row, _reproject_geometry(json.loads(row["geojson_geom"]))) for row in line_rows
+        ]
         conn.executemany(
-            "INSERT INTO power_grid VALUES (?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
+            "INSERT INTO power_grid VALUES (?, ?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
             [
                 (
                     row["id"], row["owner"], row["voltage"], row["volt_class"], row["status"], row["line_type"],
-                    json.dumps(_reproject_geometry(json.loads(row["geojson_geom"]))),
+                    _geometry_length_miles(geometry),
+                    json.dumps(geometry),
                 )
-                for row in line_rows
+                for row, geometry in reprojected_lines
             ],
         )
 

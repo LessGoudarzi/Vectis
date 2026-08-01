@@ -2,6 +2,7 @@ import { GeoJsonLayer } from '@deck.gl/layers';
 import { LayerConfig, LayerId } from '../types/gis';
 import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties, SubstationProperties, AutoPlantProperties } from '../types/gis';
 import { fuelColorHex, voltageBucketColorHex, autoPlantColorHex, getFeatureCategoryLabel } from '../legends';
+import { featureMatchesOwnerQuery } from '../owners';
 
 const hexToRgb = (hex: string): [number, number, number] => {
   const num = parseInt(hex.replace('#', ''), 16);
@@ -20,13 +21,24 @@ function filterByActiveCategories(layerId: LayerId, data: any, activeCategories:
   };
 }
 
+// When an owner search is active, matching features render at (boosted)
+// full alpha and everything else fades — vs. the category legend, which
+// removes non-matches outright. Owner search is meant for "show me this
+// company's footprint in context," not isolation.
+function ownerAlpha(baseAlpha: number, isMatch: boolean, searchActive: boolean): number {
+  if (!searchActive) return baseAlpha;
+  return isMatch ? Math.min(255, baseAlpha + 25) : Math.round(baseAlpha * 0.12);
+}
+
 export function createDeckGLLayers(
   configs: LayerConfig[],
   datasets: Record<string, any>,
   categoryFilters: Record<LayerId, Set<string>>,
+  ownerQuery: string,
   onHover: (info: any) => void
 ) {
   const sorted = [...configs].sort((a, b) => a.zIndex - b.zIndex);
+  const searchActive = ownerQuery.trim().length > 0;
 
   return sorted
     .filter((config) => config.visible)
@@ -35,6 +47,7 @@ export function createDeckGLLayers(
       const rawData = datasets[config.id];
       if (!rawData) return null;
       const data = filterByActiveCategories(config.id, rawData, categoryFilters[config.id]);
+      const isMatch = (f: any) => featureMatchesOwnerQuery(config.id, f.properties, ownerQuery);
 
       switch (config.id) {
         case 'auto-plants':
@@ -50,11 +63,12 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 6,
             getFillColor: (f: any) => {
               const props = f.properties as AutoPlantProperties;
-              return [...hexToRgb(autoPlantColorHex(props.facility_type)), 220];
+              return [...hexToRgb(autoPlantColorHex(props.facility_type)), ownerAlpha(220, isMatch(f), searchActive)];
             },
-            getLineColor: [255, 255, 255, 255],
+            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(255, isMatch(f), searchActive)],
             getLineWidth: 2,
             lineWidthMinPixels: 2,
+            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
             onHover,
           });
 
@@ -68,7 +82,7 @@ export function createDeckGLLayers(
             // in the layer panel), not the layer's flat swatch color.
             getLineColor: (f: any) => {
               const props = f.properties as TransmissionLineProperties;
-              return [...hexToRgb(voltageBucketColorHex(props.voltage)), 220];
+              return [...hexToRgb(voltageBucketColorHex(props.voltage)), ownerAlpha(220, isMatch(f), searchActive)];
             },
             getLineWidth: (f: any) => {
               const props = f.properties as TransmissionLineProperties;
@@ -76,7 +90,7 @@ export function createDeckGLLayers(
             },
             lineWidthMinPixels: 2,
             updateTriggers: {
-              getLineColor: [config.id],
+              getLineColor: [config.id, ownerQuery],
               getLineWidth: [config.id],
             },
             onHover,
@@ -99,11 +113,12 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 30,
             getFillColor: (f: any) => {
               const props = f.properties as PowerPlantProperties;
-              return [...hexToRgb(fuelColorHex(props.fuel_type)), 200];
+              return [...hexToRgb(fuelColorHex(props.fuel_type)), ownerAlpha(200, isMatch(f), searchActive)];
             },
-            getLineColor: [255, 255, 255, 180],
+            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(180, isMatch(f), searchActive)],
             getLineWidth: 1,
             lineWidthMinPixels: 1,
+            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
             onHover,
           });
 
@@ -126,11 +141,12 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 14,
             getFillColor: (f: any) => {
               const props = f.properties as SubstationProperties;
-              return [...hexToRgb(voltageBucketColorHex(props.max_voltage_kv)), 210];
+              return [...hexToRgb(voltageBucketColorHex(props.max_voltage_kv)), ownerAlpha(210, isMatch(f), searchActive)];
             },
-            getLineColor: [255, 255, 255, 160],
+            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(160, isMatch(f), searchActive)],
             getLineWidth: 1,
             lineWidthMinPixels: 1,
+            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
             onHover,
           });
 
@@ -152,11 +168,13 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 40,
             getFillColor: (f: any) => {
               const props = f.properties as IndustrialConvergenceProperties;
-              return props.energy_bottleneck_flag ? [...BOTTLENECK_COLOR, 220] : [...rgb, 220];
+              const alpha = ownerAlpha(220, isMatch(f), searchActive);
+              return props.energy_bottleneck_flag ? [...BOTTLENECK_COLOR, alpha] : [...rgb, alpha];
             },
-            getLineColor: [255, 255, 255, 255],
+            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(255, isMatch(f), searchActive)],
             getLineWidth: 2,
             lineWidthMinPixels: 1,
+            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
             onHover,
           });
 

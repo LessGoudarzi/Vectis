@@ -19,6 +19,31 @@ const INITIAL_VIEW_STATE = {
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
 
+// Matches the app chrome's own background (Tailwind slate-950) instead of
+// dark-v11's stock gray, so the map reads as part of the UI rather than a
+// separate layer dropped on top. Applied to every background/fill layer
+// (land, water, landuse, ...) rather than by layer id, since dark-v11's
+// fill-type layers are exactly the basemap polygons we want recolored —
+// roads/labels/buildings use other layer types and are left alone.
+const MAP_BACKGROUND_COLOR = '#020617';
+
+function recolorBasemap(evt: any) {
+  const map = evt.target;
+  if (!map.isStyleLoaded()) return;
+  const layers = map.getStyle()?.layers ?? [];
+  for (const layer of layers) {
+    try {
+      if (layer.type === 'background') {
+        map.setPaintProperty(layer.id, 'background-color', MAP_BACKGROUND_COLOR);
+      } else if (layer.type === 'fill') {
+        map.setPaintProperty(layer.id, 'fill-color', MAP_BACKGROUND_COLOR);
+      }
+    } catch {
+      // Layer not ready yet on this event; onStyleData/onLoad fire again.
+    }
+  }
+}
+
 export const GISMapContainer: React.FC = () => {
   const { layers, toggleVisibility, updateOpacity, toggleLegend, categoryFilters, toggleCategory, setAllCategories } =
     useLayerState();
@@ -62,6 +87,8 @@ export const GISMapContainer: React.FC = () => {
           mapboxAccessToken={MAPBOX_TOKEN}
           mapStyle="mapbox://styles/mapbox/dark-v11"
           reuseMaps
+          onLoad={recolorBasemap}
+          onStyleData={recolorBasemap}
         />
       </DeckGL>
 

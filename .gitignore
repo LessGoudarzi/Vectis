@@ -1,0 +1,18 @@
+.DS_Store
+.venv/
+
+# Generated/local runtime artifacts
+power/transmission.db
+power/tmp_trans_lines.geojson
+power/sample_data.json
+
+# Large downloaded source artifacts (re-download when needed)
+power/*_eia_v*.zip
+power/transmission_line_eia_v1/
+power/transmission_line_eia_v2.zip
+power/plant_power_eia_v9/
+power/plant_power_eia_v9.zip
+power/Electric_Power_Transmission_Lines.geojson
+
+# Large JSON exports generated from source packages
+power/**/*.gpkg.json

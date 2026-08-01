@@ -1,0 +1,58 @@
+---
+name: Vectis Yield
+goal: To model bottom-up macroeconomic growth and energy transformation across US industrial corridors, driven by robotics, advanced automation, and the convergence of automotive mass production with autonomous defense hardware.
+monthlyBudgetCapUsd: 100.00
+---
+
+# Shared Industrial Data Schema (Universal Payload Format)
+
+All research agents must format their facility-level data using the following JSON schema:
+
+```json
+{
+  "$schema": "[https://json-schema.org/draft/2020-12/schema](https://json-schema.org/draft/2020-12/schema)",
+  "title": "IndustrialConvergencePayload",
+  "type": "object",
+  "required": ["facility_id", "corridor", "retooling_metrics", "robotics_profile", "energy_profile", "macro_yield"],
+  "properties": {
+    "facility_id": { "type": "string" },
+    "corridor": { "type": "string", "enum": ["Midwest_Auto", "Texas_Defense_Hub", "Southeast_Aerospace", "Ohio_River_Industrial"] },
+    "retooling_metrics": {
+      "type": "object",
+      "properties": {
+        "legacy_sector": { "type": "string" },
+        "dual_use_target": { "type": "string" },
+        "line_flexibility_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "cots_component_overlap_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "robotics_profile": {
+      "type": "object",
+      "properties": {
+        "robot_density_per_10k_sqft": { "type": "number" },
+        "embodied_ai_adoption_level": { "type": "string" },
+        "peak_robotics_kw_draw": { "type": "number" },
+        "throughput_multiplier": { "type": "number" }
+      }
+    },
+    "energy_profile": {
+      "type": "object",
+      "properties": {
+        "iso_rto_region": { "type": "string" },
+        "substation_capacity_mw": { "type": "number" },
+        "facility_base_load_mw": { "type": "number" },
+        "onsite_microgrid_installed": { "type": "boolean" },
+        "energy_bottleneck_flag": { "type": "boolean" }
+      }
+    },
+    "macro_yield": {
+      "type": "object",
+      "properties": {
+        "estimated_annual_output_usd": { "type": "number" },
+        "labor_productivity_delta_pct": { "type": "number" },
+        "forecast_horizon_years": { "type": "integer", "minimum": 3, "maximum": 10 }
+      }
+    }
+  }
+}
+```

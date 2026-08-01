@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transmission Grid Demo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f8fafc;
+            --panel-bg: #ffffff;
+            --panel-text: #0f172a;
+            --panel-muted: #475569;
+            --panel-border: #e2e8f0;
+            --button-bg: #f8fafc;
+            --button-hover: #e2e8f0;
+            --button-border: #cbd5e1;
+            --legend-text: #334155;
+            --map-tiles-filter: none;
+        }
+        body.dark-mode {
+            color-scheme: dark;
+            --bg: #020617;
+            --panel-bg: #111827;
+            --panel-text: #f8fafc;
+            --panel-muted: #cbd5e1;
+            --panel-border: #334155;
+            --button-bg: #1f2937;
+            --button-hover: #334155;
+            --button-border: #475569;
+            --legend-text: #e2e8f0;
+            --map-tiles-filter: brightness(0.8) invert(1) contrast(1.2);
+        }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--panel-text);
+        }
+        #map {
+            height: 100vh;
+            width: 100vw;
+            background: var(--bg);
+        }
+        .panel {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            background: var(--panel-bg);
+            color: var(--panel-text);
+            padding: 14px;
+            border-radius: 16px;
+            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+            max-width: 420px;
+            width: min(420px, calc(100vw - 24px));
+            border: 1px solid var(--panel-border);
+            transform: translateX(calc(100% + 18px));
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 220ms ease, opacity 220ms ease;
+            max-height: calc(100vh - 24px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel.open {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .control-dock {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .dock-button {
+            border: 1px solid var(--button-border);
+            background: var(--panel-bg);
+            color: var(--panel-text);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+        }
+        .dock-button:hover {
+            background: var(--button-hover);
+        }
+        .panel-header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .panel-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .close-panel {
+            border: 1px solid var(--button-border);
+            background: var(--button-bg);
+            color: var(--panel-text);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .close-panel:hover {
+            background: var(--button-hover);
+        }
+        .panel-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .tab-button {
+            border: 1px solid var(--button-border);
+            background: var(--button-bg);
+            color: var(--panel-text);
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+        .tab-content {
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+        .map-status {
+            position: absolute;
+            left: 12px;
+            bottom: 14px;
+            z-index: 900;
+            background: var(--panel-bg);
+            color: var(--panel-text);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 12px;
+            max-width: min(600px, calc(100vw - 24px));
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.18);
+        }
+        .map-footnote {
+            position: absolute;
+            left: 12px;
+            bottom: 62px;
+            z-index: 900;
+            background: rgba(248, 250, 252, 0.92);
+            color: #334155;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 6px 9px;
+            font-size: 11px;
+            max-width: min(700px, calc(100vw - 24px));
+        }
+        .panel-title {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .panel-subtitle {
+            font-size: 12px;
+            color: var(--panel-muted);
+        }
+        .panel-section {
+            padding-top: 10px;
+            margin-top: 10px;
+            border-top: 1px solid var(--panel-border);
+        }
+        .section-title {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: var(--panel-muted);
+        }
+        .filter-group {
+            margin-top: 8px;
+        }
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .filter-row label {
+            font-size: 13px;
+            color: var(--panel-muted);
+        }
+        .filter-group select {
+            width: 100%;
+            margin-top: 4px;
+        }
+        .legend {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--panel-border);
+            font-size: 12px;
+            color: var(--legend-text);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .legend-subtitle {
+            margin-top: 12px;
+            font-size: 11px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: var(--panel-muted);
+        }
+        .legend-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .selection-tools {
+            margin-top: 10px;
+        }
+        .workflow-hint {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--panel-text);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .selection-tools button {
+            width: 100%;
+            margin-top: 6px;
+            padding: 8px 10px;
+            border: 1px solid var(--button-border);
+            border-radius: 6px;
+            background: var(--button-bg);
+            color: var(--panel-text);
+            cursor: pointer;
+        }
+        .selection-tools button:hover {
+            background: var(--button-hover);
+        }
+        .selection-results {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--legend-text);
+        }
+        .summary-grid {
+            display: grid;
+            gap: 10px;
+        }
+        .summary-card {
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(148, 163, 184, 0.08);
+        }
+        .summary-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .summary-table th,
+        .summary-table td {
+            text-align: left;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .summary-table th {
+            color: var(--panel-muted);
+            font-weight: 600;
+        }
+        .summary-note {
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--panel-muted);
+        }
+        .workflow-inline {
+            margin: 0;
+        }
+        .label-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-swatch.under-69 { background: #84cc16; }
+        .legend-swatch.kv-69-160 { background: #f59e0b; }
+        .legend-swatch.kv-161-229 { background: #38bdf8; }
+        .legend-swatch.kv-230-344 { background: #8b5cf6; }
+        .legend-swatch.kv-345-499 { background: #f43f5e; }
+        .legend-swatch.kv-500-plus { background: #dc2626; }
+        .legend-swatch.unknown { background: #64748b; }
+        .legend-swatch.solar { background: #f59e0b; border-radius: 999px; }
+        .legend-swatch.wind { background: #14b8a6; border-radius: 999px; }
+        .legend-swatch.hydro { background: #3b82f6; border-radius: 999px; }
+        .legend-swatch.natural-gas { background: #ef4444; border-radius: 999px; }
+        .legend-swatch.coal { background: #334155; border-radius: 999px; }
+        .legend-swatch.nuclear { background: #8b5cf6; border-radius: 999px; }
+        .legend-swatch.biomass { background: #84cc16; border-radius: 999px; }
+        .legend-swatch.petroleum { background: #f97316; border-radius: 999px; }
+        .legend-swatch.storage { background: #22c55e; border-radius: 999px; }
+        .legend-swatch.other-plant { background: #64748b; border-radius: 999px; }
+        body.dark-mode .map-footnote {
+            background: rgba(17, 24, 39, 0.92);
+            color: #e2e8f0;
+        }
+        @media (max-width: 860px) {
+            .panel {
+                left: 12px;
+                right: 12px;
+                width: auto;
+                max-width: none;
+            }
+            .map-status,
+            .map-footnote {
+                max-width: calc(100vw - 24px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="control-dock" aria-label="Control dock">
+        <button class="dock-button" type="button" onclick="openControlPanel('filters')">Controls</button>
+        <button class="dock-button" type="button" onclick="openControlPanel('buckets')">Buckets</button>
+        <button class="dock-button" type="button" onclick="openControlPanel('actions')">Actions</button>
+    </div>
+
+    <div class="panel" id="controlPanel">
+        <div class="panel-header">
+            <div class="panel-header-row">
+                <strong class="panel-title">Map workspace</strong>
+                <button class="close-panel" type="button" onclick="closeControlPanel()">Close</button>
+            </div>
+            <div class="panel-subtitle">Load only the visible area, or draw a selection to focus the map.</div>
+            <div class="panel-tabs" aria-label="Control tabs">
+                <button class="tab-button active" type="button" data-tab-button="filters" onclick="setControlTab('filters')">Filters</button>
+                <button class="tab-button" type="button" data-tab-button="layers" onclick="setControlTab('layers')">Layers</button>
+                <button class="tab-button" type="button" data-tab-button="legend" onclick="setControlTab('legend')">Legend</button>
+                <button class="tab-button" type="button" data-tab-button="buckets" onclick="setControlTab('buckets')">Buckets</button>
+                <button class="tab-button" type="button" data-tab-button="actions" onclick="setControlTab('actions')">Actions</button>
+            </div>
+        </div>
+
+        <div class="tab-content">
+        <div class="panel-section tab-pane active" data-tab-pane="filters">
+            <span class="section-title">Filters</span>
+            <div class="filter-row">
+                <label for="voltageSelect">Minimum voltage</label>
+                <select id="voltageSelect" onchange="refreshIfEnabled()">
+                    <option value="0" selected>All voltages</option>
+                    <option value="69">69 kV</option>
+                    <option value="161">161 kV</option>
+                    <option value="230">230 kV</option>
+                    <option value="345">345 kV</option>
+                    <option value="500">500 kV+</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <label for="ownerSelect">Owner</label>
+                <select id="ownerSelect" onchange="refreshIfEnabled()">
+                    <option value="">All owners</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <label for="voltageCategorySelect">Voltage category</label>
+                <select id="voltageCategorySelect" onchange="refreshIfEnabled()">
+                    <option value="">All voltage categories</option>
+                    <option value="Under 69 kV">Under 69 kV</option>
+                    <option value="69-160 kV">69-160 kV</option>
+                    <option value="161-229 kV">161-229 kV</option>
+                    <option value="230-344 kV">230-344 kV</option>
+                    <option value="345-499 kV">345-499 kV</option>
+                    <option value="500+ kV">500+ kV</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="missingVoltageToggle" class="label-inline">
+                    <input id="missingVoltageToggle" type="checkbox" onchange="refreshIfEnabled()" />
+                    <span>Show missing-voltage rows</span>
+                </label>
+            </div>
+            <div class="filter-row">
+                <label for="fuelTypeSelect">Power fuel type</label>
+                <select id="fuelTypeSelect" onchange="refreshIfEnabled()">
+                    <option value="">All fuel types</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <label for="capacityBucketSelect">Power capacity bucket</label>
+                <select id="capacityBucketSelect" onchange="refreshIfEnabled()">
+                    <option value="">All capacity buckets</option>
+                    <option value="0-10 MW">0-10 MW</option>
+                    <option value="10-50 MW">10-50 MW</option>
+                    <option value="50-100 MW">50-100 MW</option>
+                    <option value="100-250 MW">100-250 MW</option>
+                    <option value="250-500 MW">250-500 MW</option>
+                    <option value="500-1000 MW">500-1000 MW</option>
+                    <option value="1000+ MW">1000+ MW</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+        <div class="panel-section tab-pane" data-tab-pane="layers">
+            <span class="section-title">Layers</span>
+            <div class="filter-group">
+                <label for="transmissionToggle" class="label-inline">
+                    <input id="transmissionToggle" type="checkbox" checked onchange="refreshIfEnabled()" />
+                    <span>Show transmission lines</span>
+                </label>
+            </div>
+            <div class="filter-group">
+                <label for="powerPlantsToggle" class="label-inline">
+                    <input id="powerPlantsToggle" type="checkbox" onchange="refreshIfEnabled()" />
+                    <span>Show power plants</span>
+                </label>
+            </div>
+            <div class="filter-group">
+                <label for="autoRefreshToggle" class="label-inline">
+                    <input id="autoRefreshToggle" type="checkbox" />
+                    <span>Auto-refresh on pan/zoom</span>
+                </label>
+            </div>
+        </div>
+        <div class="legend panel-section tab-pane" data-tab-pane="legend" aria-label="Voltage color legend">
+            <strong>Legend</strong>
+            <div class="legend-subtitle">Transmission voltage</div>
+            <div class="legend-item"><span class="legend-swatch under-69"></span>Under 69 kV</div>
+            <div class="legend-item"><span class="legend-swatch kv-69-160"></span>69-160 kV</div>
+            <div class="legend-item"><span class="legend-swatch kv-161-229"></span>161-229 kV</div>
+            <div class="legend-item"><span class="legend-swatch kv-230-344"></span>230-344 kV</div>
+            <div class="legend-item"><span class="legend-swatch kv-345-499"></span>345-499 kV</div>
+            <div class="legend-item"><span class="legend-swatch kv-500-plus"></span>500+ kV</div>
+            <div class="legend-item"><span class="legend-swatch unknown"></span>Unknown / missing</div>
+            <div class="legend-subtitle">Power plants</div>
+            <div class="legend-item"><span class="legend-swatch solar"></span>Solar</div>
+            <div class="legend-item"><span class="legend-swatch wind"></span>Wind</div>
+            <div class="legend-item"><span class="legend-swatch hydro"></span>Hydro</div>
+            <div class="legend-item"><span class="legend-swatch natural-gas"></span>Natural Gas</div>
+            <div class="legend-item"><span class="legend-swatch coal"></span>Coal</div>
+            <div class="legend-item"><span class="legend-swatch nuclear"></span>Nuclear</div>
+            <div class="legend-item"><span class="legend-swatch biomass"></span>Biomass</div>
+            <div class="legend-item"><span class="legend-swatch petroleum"></span>Petroleum</div>
+            <div class="legend-item"><span class="legend-swatch storage"></span>Storage</div>
+            <div class="legend-item"><span class="legend-swatch other-plant"></span>Other / Unknown</div>
+        </div>
+        <div class="panel-section tab-pane" data-tab-pane="buckets">
+            <span class="section-title">Bucket suggestions</span>
+            <div class="summary-grid" id="bucketSummaries">
+                <div class="summary-card">Loading bucket summaries...</div>
+            </div>
+            <div class="summary-note">These are the current database buckets that best fit display choices and legend groupings.</div>
+        </div>
+        <div class="panel-section selection-tools tab-pane" data-tab-pane="actions">
+            <span class="section-title">Map actions</span>
+            <div class="workflow-hint">Pick layers and filters, draw a selection if needed, then click the single display button.</div>
+            <div class="workflow-hint workflow-inline">Local app: http://127.0.0.1:5008</div>
+            <button type="button" onclick="displaySelection()">Display selection</button>
+            <button type="button" onclick="enableSelectionMode()">Select area on map</button>
+            <button type="button" onclick="clearSelection()">Clear selection</button>
+            <button type="button" onclick="clearMapLayers()">Clear layers</button>
+            <button type="button" onclick="toggleTheme()" id="themeToggle">Switch to dark mode</button>
+            <div id="selectionResults" class="selection-results">Choose layers, set filters, then click Display selection.</div>
+        </div>
+        </div>
+    </div>
+
+    <p id="footnote" class="map-footnote"></p>
+    <p id="status" class="map-status">No layers loaded yet. Choose layers and click Display selection.</p>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let darkMode = false;
+        const map = L.map('map', { zoomControl: true }).setView([39.5, -98.35], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        map.whenReady(() => {
+            setTimeout(() => map.invalidateSize(), 150);
+            applyTheme();
+            loadBucketSummaries();
+        });
+
+        let layer = null;
+        let powerPlantsLayer = null;
+        let selectionLayer = null;
+        let selectionMode = false;
+        let selectionStart = null;
+        let selectionBounds = null;
+
+        function setControlTab(tabName) {
+            document.querySelectorAll('[data-tab-button]').forEach((button) => {
+                button.classList.toggle('active', button.getAttribute('data-tab-button') === tabName);
+            });
+            document.querySelectorAll('[data-tab-pane]').forEach((pane) => {
+                pane.classList.toggle('active', pane.getAttribute('data-tab-pane') === tabName);
+            });
+        }
+
+        function openControlPanel(tabName = 'filters') {
+            const panel = document.getElementById('controlPanel');
+            panel.classList.add('open');
+            setControlTab(tabName);
+        }
+
+        function closeControlPanel() {
+            document.getElementById('controlPanel').classList.remove('open');
+        }
+
+        function applyTheme() {
+            document.body.classList.toggle('dark-mode', darkMode);
+            document.getElementById('themeToggle').textContent = darkMode ? 'Switch to light mode' : 'Switch to dark mode';
+            const tileLayer = document.querySelector('.leaflet-tile-pane');
+            if (tileLayer) {
+                tileLayer.style.filter = darkMode ? 'brightness(0.8) invert(1) contrast(1.2)' : 'none';
+            }
+        }
+
+        function toggleTheme() {
+            darkMode = !darkMode;
+            applyTheme();
+        }
+
+        function getLineStyle(feature) {
+            const props = feature.properties || {};
+            const voltage = Number(props.voltage);
+            let bucket = props.voltage_bucket || 'Unknown';
+            if (bucket === 'Unknown' && Number.isFinite(voltage)) {
+                if (voltage >= 500) bucket = '500+ kV';
+                else if (voltage >= 345) bucket = '345-499 kV';
+                else if (voltage >= 230) bucket = '230-344 kV';
+                else if (voltage >= 161) bucket = '161-229 kV';
+                else if (voltage >= 69) bucket = '69-160 kV';
+                else bucket = 'Under 69 kV';
+            }
+            const colors = {
+                'Unknown': '#64748b',
+                'Under 69 kV': '#84cc16',
+                '69-160 kV': '#f59e0b',
+                '161-229 kV': '#38bdf8',
+                '230-344 kV': '#8b5cf6',
+                '345-499 kV': '#f43f5e',
+                '500+ kV': '#dc2626'
+            };
+            return {
+                color: colors[bucket] || '#64748b',
+                weight: 4,
+                opacity: 0.95,
+                lineCap: 'round',
+                lineJoin: 'round'
+            };
+        }
+
+        function getPowerPlantStyle(feature) {
+            const fuelType = (feature.properties?.fuel_type || '').toLowerCase();
+            let fillColor = '#64748b';
+            if (fuelType.includes('solar')) fillColor = '#f59e0b';
+            else if (fuelType.includes('wind')) fillColor = '#14b8a6';
+            else if (fuelType.includes('hydro')) fillColor = '#3b82f6';
+            else if (fuelType.includes('gas')) fillColor = '#ef4444';
+            else if (fuelType.includes('coal')) fillColor = '#334155';
+            else if (fuelType.includes('nuclear')) fillColor = '#8b5cf6';
+            else if (fuelType.includes('biomass')) fillColor = '#84cc16';
+            else if (fuelType.includes('petroleum') || fuelType.includes('oil')) fillColor = '#f97316';
+            else if (fuelType.includes('storage') || fuelType.includes('battery')) fillColor = '#22c55e';
+            return {
+                radius: 6,
+                fillColor,
+                color: '#ffffff',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.85
+            };
+        }
+
+        function clearSelection(keepSelectionMode = false) {
+            if (selectionLayer) {
+                map.removeLayer(selectionLayer);
+                selectionLayer = null;
+            }
+            document.getElementById('selectionResults').textContent = 'Selection cleared.';
+            selectionBounds = null;
+            if (!keepSelectionMode) {
+                selectionMode = false;
+            }
+            selectionStart = null;
+            if (!selectionMode && !map.dragging.enabled()) {
+                map.dragging.enable();
+            }
+        }
+
+        function enableSelectionMode() {
+            selectionMode = true;
+            selectionStart = null;
+            if (map.dragging.enabled()) {
+                map.dragging.disable();
+            }
+            clearSelection(true);
+            document.getElementById('selectionResults').textContent = 'Drag a rectangle on the map to inspect owners.';
+        }
+
+        function displaySelection() {
+            if (!selectionBounds) {
+                loadVisibleData('all', map.getBounds());
+                return;
+            }
+            loadVisibleData('all', selectionBounds);
+        }
+
+        function showOwnerResults(data) {
+            const results = document.getElementById('selectionResults');
+            if (!data.owners || !data.owners.length) {
+                results.textContent = 'No owners found in the selected area.';
+                return;
+            }
+            const lines = data.owners.map((entry) => `${entry.owner} (${entry.count})`).join(', ');
+            results.textContent = `Owners in selected area: ${lines}`;
+        }
+
+        function populateOwners(features) {
+            const ownerSelect = document.getElementById('ownerSelect');
+            const owners = [...new Set(features.map((feature) => feature.properties.owner || 'Unknown').filter(Boolean))].sort();
+            const current = ownerSelect.value;
+            ownerSelect.innerHTML = '<option value="">All owners</option>';
+            owners.forEach((owner) => {
+                const option = document.createElement('option');
+                option.value = owner;
+                option.textContent = owner;
+                if (current === owner) {
+                    option.selected = true;
+                }
+                ownerSelect.appendChild(option);
+            });
+        }
+
+        function queryOwnersInBounds(bounds) {
+            const minVoltage = document.getElementById('voltageSelect').value;
+            const owner = document.getElementById('ownerSelect').value;
+            const voltageCategory = document.getElementById('voltageCategorySelect').value;
+            const includeMissingVoltage = document.getElementById('missingVoltageToggle').checked;
+            const params = new URLSearchParams({
+                min_lon: bounds.getWest().toFixed(6),
+                max_lon: bounds.getEast().toFixed(6),
+                min_lat: bounds.getSouth().toFixed(6),
+                max_lat: bounds.getNorth().toFixed(6),
+                min_voltage: minVoltage,
+                include_missing_voltage: includeMissingVoltage ? '1' : '0'
+            });
+            if (owner) params.set('owner', owner);
+            if (voltageCategory) params.set('voltage_category', voltageCategory);
+            fetch(`/api/owners-in-bounds?${params.toString()}`, { cache: 'no-store' })
+                .then((response) => response.json())
+                .then((data) => showOwnerResults(data))
+                .catch((err) => {
+                    console.error(err);
+                    document.getElementById('selectionResults').textContent = 'Unable to identify owners in the selected area.';
+                });
+        }
+
+        function getViewportParams(bounds = map.getBounds()) {
+            const params = new URLSearchParams();
+            params.set('min_lon', bounds.getWest().toFixed(6));
+            params.set('max_lon', bounds.getEast().toFixed(6));
+            params.set('min_lat', bounds.getSouth().toFixed(6));
+            params.set('max_lat', bounds.getNorth().toFixed(6));
+            return params;
+        }
+
+        function loadPowerPlants(bounds) {
+            const toggle = document.getElementById('powerPlantsToggle');
+            if (!toggle.checked) {
+                if (powerPlantsLayer) {
+                    map.removeLayer(powerPlantsLayer);
+                    powerPlantsLayer = null;
+                }
+                return;
+            }
+
+            const params = getViewportParams(bounds || map.getBounds());
+            const fuelType = document.getElementById('fuelTypeSelect').value;
+            const capacityBucket = document.getElementById('capacityBucketSelect').value;
+            if (fuelType) params.set('fuel_type', fuelType);
+            if (capacityBucket) params.set('capacity_bucket', capacityBucket);
+            fetch(`/api/power-plants?${params.toString()}`, { cache: 'no-store' })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (powerPlantsLayer) {
+                        map.removeLayer(powerPlantsLayer);
+                    }
+                    const features = (data.features || []).filter((feature) => feature.geometry);
+                    const meta = data.meta || {};
+                    powerPlantsLayer = L.geoJSON({
+                        type: 'FeatureCollection',
+                        features
+                    }, {
+                        pointToLayer: (feature, latlng) => L.circleMarker(latlng, getPowerPlantStyle(feature)),
+                        onEachFeature: (feature, leafletLayer) => {
+                            leafletLayer.bindPopup(`
+                                <strong>Plant:</strong> ${feature.properties.plant_name || 'Unknown'}<br/>
+                                <strong>Fuel:</strong> ${feature.properties.fuel_type || 'Unknown'}<br/>
+                                <strong>Capacity:</strong> ${feature.properties.capacity_mw || 'Unknown'} MW<br/>
+                                <strong>Size bucket:</strong> ${feature.properties.capacity_bucket || 'Unknown'}<br/>
+                                <strong>Owner:</strong> ${feature.properties.owner || 'Unknown'}
+                            `);
+                        }
+                    });
+                    powerPlantsLayer.addTo(map);
+                    const summary = meta.total_count > features.length
+                        ? `Showing ${features.length} of ${meta.total_count} visible power plants (preview).`
+                        : `Showing ${features.length} visible power plants.`;
+                    document.getElementById('status').textContent = summary;
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        }
+
+        function renderSummaryTable(title, rows, columns) {
+            const headerCells = columns.map((column) => `<th>${column.label}</th>`).join('');
+            const bodyRows = rows.length
+                ? rows.map((row) => `<tr>${columns.map((column) => `<td>${row[column.key] ?? ''}</td>`).join('')}</tr>`).join('')
+                : `<tr><td colspan="${columns.length}">No data</td></tr>`;
+            return `
+                <div class="summary-card">
+                    <h4>${title}</h4>
+                    <table class="summary-table">
+                        <thead><tr>${headerCells}</tr></thead>
+                        <tbody>${bodyRows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function loadBucketSummaries() {
+            fetch('/api/bucket-summaries', { cache: 'no-store' })
+                .then((response) => response.json())
+                .then((data) => {
+                    const transmissionVoltage = data.transmission?.voltage_buckets || [];
+                    const transmissionLineType = data.transmission?.line_type_buckets || [];
+                    const powerFuel = data.power_plants?.fuel_buckets || [];
+                    const powerCapacity = data.power_plants?.capacity_buckets || [];
+                    const fuelTypeSelect = document.getElementById('fuelTypeSelect');
+                    const currentFuel = fuelTypeSelect.value;
+                    fuelTypeSelect.innerHTML = '<option value="">All fuel types</option>';
+                    powerFuel.forEach((row) => {
+                        const fuel = row.fuel_type || 'Unknown';
+                        const option = document.createElement('option');
+                        option.value = fuel;
+                        option.textContent = `${fuel} (${row.plant_count})`;
+                        if (currentFuel === fuel) option.selected = true;
+                        fuelTypeSelect.appendChild(option);
+                    });
+                    document.getElementById('bucketSummaries').innerHTML = [
+                        renderSummaryTable('Transmission voltage', transmissionVoltage, [
+                            { key: 'bucket', label: 'Bucket' },
+                            { key: 'count', label: 'Count' },
+                        ]),
+                        renderSummaryTable('Transmission line type', transmissionLineType, [
+                            { key: 'bucket', label: 'Type' },
+                            { key: 'count', label: 'Count' },
+                        ]),
+                        renderSummaryTable('Power-plant fuel type', powerFuel.slice(0, 8), [
+                            { key: 'fuel_type', label: 'Fuel' },
+                            { key: 'plant_count', label: 'Plants' },
+                            { key: 'total_capacity_mw', label: 'MW' },
+                        ]),
+                        renderSummaryTable('Power-plant fuel + capacity', powerCapacity.slice(0, 10), [
+                            { key: 'fuel_type', label: 'Fuel' },
+                            { key: 'capacity_bucket', label: 'Capacity bucket' },
+                            { key: 'plant_count', label: 'Plants' },
+                        ]),
+                    ].join('');
+                })
+                .catch((err) => {
+                    console.error(err);
+                    document.getElementById('bucketSummaries').innerHTML = '<div class="summary-card">Unable to load bucket summaries.</div>';
+                });
+        }
+
+        function refreshIfEnabled() {
+            const autoRefresh = document.getElementById('autoRefreshToggle').checked;
+            if (!autoRefresh) {
+                document.getElementById('status').textContent = 'Filters updated. Click Display selection to refresh the map.';
+                return;
+            }
+            loadVisibleData('all', selectionBounds || map.getBounds());
+        }
+
+        function clearMapLayers() {
+            if (layer) {
+                map.removeLayer(layer);
+                layer = null;
+            }
+            if (powerPlantsLayer) {
+                map.removeLayer(powerPlantsLayer);
+                powerPlantsLayer = null;
+            }
+            document.getElementById('status').textContent = 'Layers cleared.';
+        }
+
+        function loadVisibleData(mode = 'all', bounds = null) {
+            const selectedBounds = bounds || map.getBounds();
+            const showTransmission = mode === 'transmission' || (mode === 'all' && document.getElementById('transmissionToggle').checked);
+            const showPowerPlants = mode === 'power' || (mode === 'all' && document.getElementById('powerPlantsToggle').checked);
+            if (!showTransmission && !showPowerPlants) {
+                clearMapLayers();
+                document.getElementById('status').textContent = 'No layers selected.';
+                return;
+            }
+            if (showTransmission) {
+                loadLines(selectedBounds);
+            } else if (layer) {
+                map.removeLayer(layer);
+                layer = null;
+            }
+            if (showPowerPlants) {
+                loadPowerPlants(selectedBounds);
+            } else if (powerPlantsLayer) {
+                map.removeLayer(powerPlantsLayer);
+                powerPlantsLayer = null;
+            }
+        }
+
+        function loadLines(bounds) {
+            const minVoltage = document.getElementById('voltageSelect').value;
+            const owner = document.getElementById('ownerSelect').value;
+            const voltageCategory = document.getElementById('voltageCategorySelect').value;
+            const includeMissingVoltage = document.getElementById('missingVoltageToggle').checked;
+            document.getElementById('status').textContent = 'Loading map data...';
+            const params = getViewportParams(bounds || map.getBounds());
+            params.set('min_voltage', minVoltage);
+            if (owner) params.set('owner', owner);
+            if (voltageCategory) params.set('voltage_category', voltageCategory);
+            if (includeMissingVoltage) params.set('include_missing_voltage', '1');
+            fetch(`/api/lines?${params.toString()}`, { cache: 'no-store' })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (layer) {
+                        map.removeLayer(layer);
+                    }
+
+                    populateOwners(data.features);
+                    const displayedFeatures = data.features.filter((feature) => feature.geometry);
+                    const missingGeometryCount = data.features.length - displayedFeatures.length;
+
+                    layer = L.geoJSON({
+                        type: 'FeatureCollection',
+                        features: displayedFeatures
+                    }, {
+                        style: getLineStyle,
+                        onEachFeature: (feature, leafletLayer) => {
+                            leafletLayer.bindPopup(`
+                                <strong>Owner:</strong> ${feature.properties.owner || 'Unknown'}<br/>
+                                <strong>Voltage:</strong> ${feature.properties.voltage} kV<br/>
+                                <strong>Status:</strong> ${feature.properties.status || 'Unknown'}
+                            `);
+                        }
+                    });
+
+                    layer.addTo(map);
+
+                    if (!displayedFeatures.length) {
+                        map.setView([39.5, -98.35], 4);
+                    }
+
+                    const footnote = document.getElementById('footnote');
+                    const meta = data.meta || {};
+                    const missingVoltageCount = data.features.filter((feature) => feature.properties.voltage != null && feature.properties.voltage < 0).length;
+                    const previewSummary = meta.total_count > displayedFeatures.length
+                        ? `Showing ${displayedFeatures.length} of ${meta.total_count} visible lines (preview).`
+                        : `Showing ${displayedFeatures.length} visible lines.`;
+                    footnote.textContent = `${displayedFeatures.length} lines displayed; ${missingGeometryCount} lines in the database have no geometry and are not shown; ${missingVoltageCount} lines are marked as missing-voltage.`;
+                    document.getElementById('status').textContent = previewSummary;
+                })
+                .catch((err) => {
+                    console.error(err);
+                    document.getElementById('status').textContent = 'Failed to load map data';
+                });
+        }
+
+        map.on('moveend', () => {
+            if (document.getElementById('autoRefreshToggle').checked) {
+                loadVisibleData();
+            }
+        });
+
+        map.on('mousedown', (event) => {
+            if (!selectionMode) return;
+            selectionStart = event.latlng;
+        });
+
+        map.on('mousemove', (event) => {
+            if (!selectionMode || !selectionStart) return;
+            const bounds = L.latLngBounds(selectionStart, event.latlng);
+            if (selectionLayer) {
+                map.removeLayer(selectionLayer);
+            }
+            selectionLayer = L.rectangle(bounds, {
+                color: '#2563eb',
+                weight: 2,
+                fillOpacity: 0.15
+            }).addTo(map);
+        });
+
+        map.on('mouseup', (event) => {
+            if (!selectionMode || !selectionStart) return;
+            const bounds = L.latLngBounds(selectionStart, event.latlng);
+            selectionMode = false;
+            selectionBounds = bounds;
+            if (selectionLayer) {
+                map.removeLayer(selectionLayer);
+            }
+            selectionLayer = L.rectangle(bounds, {
+                color: '#2563eb',
+                weight: 2,
+                fillOpacity: 0.08
+            }).addTo(map);
+            if (map.dragging.enabled() === false) {
+                map.dragging.enable();
+            }
+            if (bounds && bounds.isValid()) {
+                queryOwnersInBounds(bounds);
+                document.getElementById('selectionResults').textContent = 'Selection ready. Click Display selection to load the selected area.';
+            }
+        });
+
+        document.getElementById('status').textContent = 'No layers loaded yet. Choose layers and click Display selection.';
+    </script>
+</body>
+</html>

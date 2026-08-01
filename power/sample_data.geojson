@@ -1,0 +1,33 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "owner": "Example Utility",
+        "voltage": 230,
+        "volt_class": "230 kV",
+        "status": "Active",
+        "state": "TX"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-106.0, 31.0], [-99.0, 32.5], [-95.0, 34.0]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "owner": "Demo Co-op",
+        "voltage": 345,
+        "volt_class": "345 kV",
+        "status": "Active",
+        "state": "IL"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-90.0, 38.0], [-88.0, 40.0], [-84.0, 42.0]]
+      }
+    }
+  ]
+}

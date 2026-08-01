@@ -21,11 +21,14 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
 
 // Matches the app chrome's own background (Tailwind slate-950) instead of
 // dark-v11's stock gray, so the map reads as part of the UI rather than a
-// separate layer dropped on top. Applied to every background/fill layer
-// (land, water, landuse, ...) rather than by layer id, since dark-v11's
-// fill-type layers are exactly the basemap polygons we want recolored —
-// roads/labels/buildings use other layer types and are left alone.
-const MAP_BACKGROUND_COLOR = '#020617';
+// separate layer dropped on top. Water gets a distinct, slightly lighter
+// shade (slate-900) — an earlier version flattened land and water to the
+// identical color, which erased every coastline. Checked dark-v11's actual
+// style JSON (via the Styles API) rather than guessing at layer ids: the
+// background/fill layers are land (background), national-park, landuse,
+// water, land-structure-polygon, aeroway-polygon, building.
+const LAND_COLOR = '#020617'; // slate-950
+const WATER_COLOR = '#0f172a'; // slate-900 — one step lighter, keeps coastlines visible
 
 function recolorBasemap(evt: any) {
   const map = evt.target;
@@ -34,9 +37,9 @@ function recolorBasemap(evt: any) {
   for (const layer of layers) {
     try {
       if (layer.type === 'background') {
-        map.setPaintProperty(layer.id, 'background-color', MAP_BACKGROUND_COLOR);
+        map.setPaintProperty(layer.id, 'background-color', LAND_COLOR);
       } else if (layer.type === 'fill') {
-        map.setPaintProperty(layer.id, 'fill-color', MAP_BACKGROUND_COLOR);
+        map.setPaintProperty(layer.id, 'fill-color', layer.id === 'water' ? WATER_COLOR : LAND_COLOR);
       }
     } catch {
       // Layer not ready yet on this event; onStyleData/onLoad fire again.

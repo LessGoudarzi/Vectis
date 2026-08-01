@@ -1,4 +1,4 @@
-export type LayerId = 'auto-plants' | 'power-grid' | 'power-plants' | 'industrial-convergence';
+export type LayerId = 'auto-plants' | 'power-grid' | 'power-plants' | 'substations' | 'industrial-convergence';
 
 export interface LayerConfig {
   id: LayerId;
@@ -33,6 +33,19 @@ export interface PowerPlantProperties {
   capacity_mw: number | null;
   owner: string;
   state: string;
+}
+
+// Mirrors backend/ingest_power_grid.py's substations table columns
+export interface SubstationProperties {
+  id: number;
+  facility_name: string;
+  sub_type: string;
+  status: string;
+  county: string;
+  state: string;
+  max_voltage_kv: number | null;
+  min_voltage_kv: number | null;
+  line_count: number | null;
 }
 
 // Mirrors backend/ingest_industrial_convergence.py's flattened

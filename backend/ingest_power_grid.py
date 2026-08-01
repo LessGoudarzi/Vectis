@@ -1,6 +1,7 @@
-"""Load the real EIA/HIFLD transmission-line and power-plant data that
-power/ingest_to_sqlite.py already ingested into a SQLite database, and
-seed it into DuckDB as the `power_grid` / `power_plants` spatial layers.
+"""Load the real EIA/HIFLD transmission-line, power-plant, and substation
+data that power/ingest_to_sqlite.py already ingested into a SQLite
+database, and seed it into DuckDB as the `power_grid` / `power_plants` /
+`substations` spatial layers.
 
 The SQLite geometries are stored in Web Mercator (EPSG:3857), matching
 power/app.py's convention of reprojecting to WGS84 at read time rather
@@ -54,12 +55,13 @@ def _load_sqlite_rows(sqlite_db_path: Path, table: str, columns: list[str]) -> l
 
 
 def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Path) -> dict[str, int]:
-    """(Re)create the `power_grid` and `power_plants` DuckDB tables from
-    the real data in power/ingest_to_sqlite.py's SQLite output.
+    """(Re)create the `power_grid`, `power_plants`, and `substations`
+    DuckDB tables from the real data in power/ingest_to_sqlite.py's
+    SQLite output.
 
-    Leaves both tables empty (rather than raising) if the SQLite file
-    isn't present yet, so a fresh checkout without the local db still
-    boots the API.
+    Leaves all three tables empty (rather than raising) if the SQLite
+    file isn't present yet, so a fresh checkout without the local db
+    still boots the API.
     """
     conn.execute("DROP TABLE IF EXISTS power_grid")
     conn.execute(
@@ -79,10 +81,20 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         )
         """
     )
+    conn.execute("DROP TABLE IF EXISTS substations")
+    conn.execute(
+        """
+        CREATE TABLE substations (
+            id INTEGER, facility_name TEXT, sub_type TEXT, status TEXT,
+            county TEXT, state TEXT, max_voltage_kv DOUBLE, min_voltage_kv DOUBLE,
+            line_count INTEGER, geom GEOMETRY
+        )
+        """
+    )
 
     if not sqlite_db_path.exists():
-        logger.warning(f"No SQLite source at {sqlite_db_path}; power_grid/power_plants will be empty.")
-        return {"power_grid": 0, "power_plants": 0}
+        logger.warning(f"No SQLite source at {sqlite_db_path}; power_grid/power_plants/substations will be empty.")
+        return {"power_grid": 0, "power_plants": 0, "substations": 0}
 
     line_rows = _load_sqlite_rows(
         sqlite_db_path, "transmission_lines", ["id", "owner", "voltage", "volt_class", "status", "line_type"]
@@ -114,4 +126,22 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
             ],
         )
 
-    return {"power_grid": len(line_rows), "power_plants": len(plant_rows)}
+    substation_rows = _load_sqlite_rows(
+        sqlite_db_path,
+        "substations",
+        ["id", "facility_name", "sub_type", "status", "county", "state", "max_voltage_kv", "min_voltage_kv", "line_count"],
+    )
+    if substation_rows:
+        conn.executemany(
+            "INSERT INTO substations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
+            [
+                (
+                    row["id"], row["facility_name"], row["sub_type"], row["status"], row["county"], row["state"],
+                    row["max_voltage_kv"], row["min_voltage_kv"], row["line_count"],
+                    json.dumps(_reproject_geometry(json.loads(row["geojson_geom"]))),
+                )
+                for row in substation_rows
+            ],
+        )
+
+    return {"power_grid": len(line_rows), "power_plants": len(plant_rows), "substations": len(substation_rows)}

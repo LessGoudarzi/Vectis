@@ -1,6 +1,6 @@
 import { GeoJsonLayer } from '@deck.gl/layers';
 import { LayerConfig, LayerId } from '../types/gis';
-import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties } from '../types/gis';
+import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties, SubstationProperties } from '../types/gis';
 import { fuelColorHex, voltageBucketColorHex, getFeatureCategoryLabel } from '../legends';
 
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -96,6 +96,33 @@ export function createDeckGLLayers(
               return [...hexToRgb(fuelColorHex(props.fuel_type)), 200];
             },
             getLineColor: [255, 255, 255, 180],
+            getLineWidth: 1,
+            lineWidthMinPixels: 1,
+            onHover,
+          });
+
+        case 'substations':
+          return new GeoJsonLayer({
+            id: config.id,
+            data,
+            pickable: true,
+            opacity: config.opacity,
+            pointRadiusUnits: 'meters',
+            pointRadiusScale: 1,
+            // Colored by max_voltage_kv, same buckets/palette as
+            // Transmission Lines (see legends.ts's VOLTAGE_LEGEND); sized
+            // by line_count as a secondary "how significant a hub" cue.
+            getPointRadius: (f: any) => {
+              const props = f.properties as SubstationProperties;
+              return 1500 + Math.sqrt(Math.max(props.line_count ?? 0, 0)) * 400;
+            },
+            pointRadiusMinPixels: 2,
+            pointRadiusMaxPixels: 14,
+            getFillColor: (f: any) => {
+              const props = f.properties as SubstationProperties;
+              return [...hexToRgb(voltageBucketColorHex(props.max_voltage_kv)), 210];
+            },
+            getLineColor: [255, 255, 255, 160],
             getLineWidth: 1,
             lineWidthMinPixels: 1,
             onHover,

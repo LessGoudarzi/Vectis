@@ -5,6 +5,7 @@ import { useLayerState } from '../hooks/useLayerState';
 import { useGISData } from '../hooks/useGISData';
 import { createDeckGLLayers } from '../layers/layerFactory';
 import { LayerManager } from './LayerManager';
+import { FeatureTooltip } from './FeatureTooltip';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const INITIAL_VIEW_STATE = {
@@ -54,17 +55,12 @@ export const GISMapContainer: React.FC = () => {
       </DeckGL>
 
       {hoverInfo?.object && (
-        <div
-          className="absolute z-30 pointer-events-none rounded-lg border border-slate-700 bg-slate-900/90 p-3 text-xs text-white shadow-xl backdrop-blur-md"
-          style={{ left: hoverInfo.x + 12, top: hoverInfo.y + 12 }}
-        >
-          <div className="font-bold text-cyan-400 mb-1">
-            {hoverInfo.layer?.id.toUpperCase()}
-          </div>
-          <pre className="font-mono text-[11px] text-slate-300">
-            {JSON.stringify(hoverInfo.object.properties, null, 2)}
-          </pre>
-        </div>
+        <FeatureTooltip
+          x={hoverInfo.x}
+          y={hoverInfo.y}
+          layerId={hoverInfo.layer?.id ?? ''}
+          properties={hoverInfo.object.properties}
+        />
       )}
     </div>
   );

@@ -67,6 +67,12 @@ export const LAYER_LEGENDS: Record<LayerId, LegendEntry[]> = {
   'auto-plants': AUTO_PLANTS_LEGEND,
   'power-grid': VOLTAGE_LEGEND,
   'power-plants': FUEL_LEGEND,
+  // Substations are categorized by max_voltage_kv (the highest voltage
+  // line they tie into), so they share the same voltage buckets/colors
+  // as transmission lines — selection state is still tracked per-layer
+  // (see useLayerState.ts's categoryFilters), so toggling a bucket here
+  // doesn't affect the Transmission Lines layer.
+  substations: VOLTAGE_LEGEND,
   'industrial-convergence': INDUSTRIAL_CONVERGENCE_LEGEND,
 };
 
@@ -78,6 +84,8 @@ export function getFeatureCategoryLabel(layerId: LayerId, properties: any): stri
       return voltageBucketLabel(properties?.voltage);
     case 'power-plants':
       return FUEL_COLOR_BY_LABEL[properties?.fuel_type] ? properties.fuel_type : 'Other / Unknown';
+    case 'substations':
+      return voltageBucketLabel(properties?.max_voltage_kv);
     case 'industrial-convergence':
       return properties?.energy_bottleneck_flag ? 'Energy bottleneck' : 'Facility';
     case 'auto-plants':

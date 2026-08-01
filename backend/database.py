@@ -48,8 +48,9 @@ class SpatialDatabase:
         # mock entirely and adds power_plants as a new layer.
         counts = build_power_grid_tables(self.conn, POWER_GRID_SQLITE_DB)
         logger.info(
-            f"Loaded {counts['power_grid']} transmission lines and "
-            f"{counts['power_plants']} power plants from {POWER_GRID_SQLITE_DB}"
+            f"Loaded {counts['power_grid']} transmission lines, "
+            f"{counts['power_plants']} power plants, and {counts['substations']} "
+            f"substations from {POWER_GRID_SQLITE_DB}"
         )
 
     def _seed_industrial_convergence(self):

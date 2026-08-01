@@ -20,14 +20,23 @@ full target architecture spec.
 
 ## Status: what's real vs. mock right now
 
-The app renders four map layers. Only two are backed by real data today:
+The app renders five map layers. Three are backed by real data today:
 
 | Layer | Backed by | Real or mock? |
 |---|---|---|
 | **Transmission Lines** | EIA/HIFLD transmission-line dataset (ANL GEM tool) | ✅ Real — 94,619 line segments |
 | **Power Plants** | EIA-860/860M/923 generating-unit dataset (ANL GEM tool) | ✅ Real — 12,798 facilities |
+| **Substations** | HIFLD electric substation dataset v4 (ANL GEM tool) | ✅ Real — 74,428 facilities |
 | **Automobile Assembly Plants** | 5 rows hardcoded in `backend/database.py` | ⚠️ Mock — no real dataset wired up yet |
 | **Industrial Convergence Facilities** | `vectis-yield-spec/` agent swarm output | ⚠️ Mock — the real payload drop directory is empty; falls back to 2 bundled sample facilities |
+
+Each real-data layer has its own selectable legend in the layer panel:
+Transmission Lines and Substations are both colored/filterable by voltage
+bucket (`voltage` and `max_voltage_kv` respectively — same palette, but
+independent selection state per layer); Power Plants by fuel type. Clicking
+a legend entry shows/hides just that category; each layer also gets an
+All/None button to clear a layer down to nothing and build a selection back
+up one category at a time.
 
 The agent swarm (`agent-ceo` + domain agents, spec'd in `vectis-yield-spec/`)
 is supposed to populate the Industrial Convergence layer, but the orchestrator
@@ -40,6 +49,7 @@ flowchart TD
     subgraph SRC["External sources"]
         EIA_T["EIA/HIFLD transmission-line dataset\n(gem.anl.gov, transmission_line_eia v1)"]
         EIA_P["EIA power-plant dataset\n(gem.anl.gov, plant_power_eia v9)"]
+        EIA_S["HIFLD substation dataset\n(gem.anl.gov, electric_substation_hifld v4)"]
         AGENTS["vectis-yield-spec/ agent swarm\n(agent-ceo + domain agents)"]
     end
 
@@ -48,10 +58,11 @@ flowchart TD
         REPROJECT_NONE["Store geometry as-is\n(Web Mercator / EPSG:3857)"]
     end
 
-    SQLITE[("transmission.db (SQLite)\ntables: transmission_lines, power_plants")]
+    SQLITE[("transmission.db (SQLite)\ntables: transmission_lines,\npower_plants, substations")]
 
     EIA_T --> DL
     EIA_P --> DL
+    EIA_S --> DL
     DL --> REPROJECT_NONE --> SQLITE
 
     subgraph LEGACY["Legacy prototype — power/"]
@@ -64,10 +75,10 @@ flowchart TD
     subgraph PLATFORM["Current platform"]
         direction TB
         subgraph BACKEND["backend/ — FastAPI + DuckDB (port 8010)"]
-            GRID_INGEST["ingest_power_grid.py\nreprojects Mercator → WGS84 in Python\n(once, at process startup)"]
+            GRID_INGEST["ingest_power_grid.py\nreprojects Mercator → WGS84 in Python\n(once, at process startup;\n~2 min for ~182K combined rows)"]
             IC_INGEST["ingest_industrial_convergence.py\nvalidates + flattens JSON payloads"]
             MOCK["database.py\nhardcoded auto_plants rows"]
-            DUCKDB[("DuckDB :memory:\ntables: power_grid, power_plants,\nauto_plants, industrial_convergence")]
+            DUCKDB[("DuckDB :memory:\ntables: power_grid, power_plants,\nsubstations, auto_plants,\nindustrial_convergence")]
             API["routers/layers.py\nGET /api/v1/layers/{layer_id}\n→ ST_AsGeoJSON"]
             GRID_INGEST --> DUCKDB
             IC_INGEST --> DUCKDB
@@ -83,9 +94,9 @@ flowchart TD
 
         subgraph FRONTEND["frontend/ — Vite + React + Deck.gl (port 5173)"]
             PROXY["vite dev server\nproxies /api → :8010"]
-            HOOK["useGISData.ts\nfetches all 4 layers"]
-            STATE["useLayerState.ts\nvisibility / opacity /\nlegend / category filters"]
-            FACTORY["layerFactory.ts + legends.ts\ncolor-codes by voltage bucket\nor fuel type, filters by\nactive legend categories"]
+            HOOK["useGISData.ts\nfetches all 5 layers"]
+            STATE["useLayerState.ts\nvisibility / opacity /\nlegend / per-category filters"]
+            FACTORY["layerFactory.ts + legends.ts\ncolor-codes each layer (voltage\nbucket or fuel type), filters by\nactive legend categories"]
             MAP["GISMapContainer.tsx\nDeck.gl over Mapbox GL"]
             PROXY --> HOOK --> FACTORY
             STATE --> FACTORY
@@ -109,11 +120,16 @@ Key details worth remembering:
   `backend/ingest_power_grid.py` reprojects once, eagerly, at DuckDB seed
   time (necessary because DuckDB's spatial functions need WGS84 to line up
   bboxes with the other layers). Both use the same inverse-Mercator formula.
-- **`transmission.db` is not committed.** It's ~140MB and gitignored,
-  along with the two ~15–430MB raw JSON exports at the repo root
-  (`plant_power_eia_v9.json`, `transmission_line_eia_v1.json`). Regenerate
-  them locally — see [Regenerating the real data](#regenerating-the-real-data)
-  below.
+- **`transmission.db` is not committed.** It's ~145MB and gitignored,
+  along with the raw source exports at the repo root
+  (`plant_power_eia_v9.json`, `transmission_line_eia_v1.json`,
+  `electric_substation_hifld_v4.zip`/`.gpkg`). Regenerate them locally — see
+  [Regenerating the real data](#regenerating-the-real-data) below.
+- **Backend startup takes ~2 minutes** with all three real datasets loaded
+  (94,619 + 12,798 + 74,428 = ~182K rows). DuckDB's per-row
+  `ST_GeomFromGeoJSON` insert in `ingest_power_grid.py` doesn't scale
+  linearly-fast past this volume — noted as a known gap below rather than
+  fixed, since it's a one-time cost per process start, not per-request.
 - **DuckDB is in-memory and rebuilt from scratch on every backend restart.**
   There's no persistence layer for the DuckDB tables themselves; SQLite
   (`transmission.db`) and the JSON payload files are the durable sources of
@@ -160,9 +176,11 @@ uvicorn main:app --reload --port 8010
 ```
 
 On startup it looks for `../transmission.db` (repo root) to seed the real
-`power_grid` and `power_plants` layers — see the regeneration steps below if
-it doesn't exist yet. `industrial_convergence` and `auto_plants` seed fine
-with no extra setup (they use bundled sample/mock data).
+`power_grid`, `power_plants`, and `substations` layers (~2 min the first
+time DuckDB builds these three tables — see above) — see the regeneration
+steps below if it doesn't exist yet. `industrial_convergence` and
+`auto_plants` seed fine with no extra setup (they use bundled sample/mock
+data).
 
 ### Frontend
 
@@ -189,9 +207,13 @@ pip install -r requirements.txt   # flask, geopandas
 python ingest_to_sqlite.py --db ../transmission.db
 ```
 
-This downloads both GEM tool datasets (transmission lines + power plants),
-converts them, and writes `transmission_lines`/`power_plants` tables into
-`../transmission.db`. Restart the backend afterward to pick it up.
+This downloads all three GEM tool datasets (transmission lines, power
+plants, substations), converts them, and writes
+`transmission_lines`/`power_plants`/`substations` tables into
+`../transmission.db`. Restart the backend afterward to pick it up. If you
+already have a substations GeoPackage downloaded locally (e.g. at the repo
+root as `electric_substation_hifld_v4/electric_substation_hifld_v4.gpkg`),
+`build_substations_db()` picks it up automatically instead of re-downloading.
 
 ## Known gaps
 
@@ -211,3 +233,9 @@ converts them, and writes `transmission_lines`/`power_plants` tables into
 - **Docker Compose deployment** (`Platform_spec.md` §3.3 / Build Guide Phase 6)
   hasn't been exercised — `Dockerfile`s exist for both services but haven't
   been built/tested together.
+- **Backend startup is ~2 minutes** with all three real datasets loaded
+  (see above). Fine for a long-running dev/prod process, painful if you're
+  iterating with `--reload` and touching backend files often — each save
+  triggers a full DuckDB rebuild. Not yet optimized (would likely mean
+  batching the DuckDB inserts instead of one `ST_GeomFromGeoJSON(?)` call
+  per row).

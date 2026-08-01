@@ -12,6 +12,7 @@ import geopandas as gpd
 
 TRANSMISSION_URL = "https://gem.anl.gov/tool/r/conus/layers/transmission_line_eia/versions/1/download.zip"
 POWER_PLANTS_URL = "https://gem.anl.gov/tool/r/conus/layers/plant_power_eia/versions/9/download.zip"
+SUBSTATIONS_URL = "https://gem.anl.gov/tool/r/conus/layers/electric_substation_hifld/versions/4/download.zip"
 
 
 def _get_prop(row, *names):
@@ -391,6 +392,108 @@ def build_power_plants_db(
     print(f"Power-plant database updated at {db_path}")
 
 
+def build_substations_db(
+    geojson_path="substations.gpkg",
+    db_path="transmission.db",
+    source_url=SUBSTATIONS_URL,
+    force_download=False,
+):
+    geojson_path = Path(geojson_path)
+    db_path = Path(db_path)
+
+    default_candidate = Path(__file__).with_name("substations.gpkg")
+    # GEM tool downloads for this layer land at the repo root as
+    # electric_substation_hifld_v4/electric_substation_hifld_v4.gpkg; also
+    # check the power/-local convention used by the other two datasets.
+    bundled_candidates = [
+        Path(__file__).resolve().parent.parent / "electric_substation_hifld_v4" / "electric_substation_hifld_v4.gpkg",
+        Path(__file__).with_name("electric_substation_hifld_v4") / "electric_substation_hifld_v4.gpkg",
+    ]
+    if not force_download:
+        if geojson_path.exists():
+            pass
+        elif geojson_path.name == default_candidate.name:
+            for candidate in bundled_candidates:
+                if candidate.exists():
+                    geojson_path = candidate
+                    break
+
+    if not geojson_path.exists() or force_download:
+        if source_url:
+            cache_path = geojson_path if geojson_path.name != "" else Path(__file__).with_name("substations.gpkg")
+            if not cache_path.parent.exists():
+                cache_path.parent.mkdir(parents=True, exist_ok=True)
+            fallback_path = Path(__file__).with_name("sample_data.geojson")
+            geojson_path = _prepare_source_dataset(source_url, cache_path, force_download, fallback_path=fallback_path)
+        else:
+            raise FileNotFoundError(f"Could not find input GeoPackage at {geojson_path}.")
+
+    print(f"Loading substation dataset from {geojson_path}...")
+    feature_collection = _load_feature_collection(geojson_path)
+    features = feature_collection.get("features", [])
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS substations")
+    cursor.execute(
+        """
+        CREATE TABLE substations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            facility_name TEXT,
+            sub_type TEXT,
+            status TEXT,
+            county TEXT,
+            state TEXT,
+            max_voltage_kv REAL,
+            min_voltage_kv REAL,
+            line_count INTEGER,
+            naics_desc TEXT,
+            geojson_geom TEXT
+        )
+        """
+    )
+
+    records = []
+    for feature in features:
+        properties = feature.get("properties") or {}
+        geometry = feature.get("geometry")
+        if geometry is None:
+            continue
+        state_value = _get_feature_prop(properties, "state", "State", "STATE") or ""
+        if str(state_value).upper() in ["AK", "HI", "PR", "VI", "GU"]:
+            continue
+        geom_str = json.dumps(geometry)
+        records.append(
+            (
+                str(_get_feature_prop(properties, "name", "Name") or "Unknown"),
+                str(_get_feature_prop(properties, "type", "Type") or "Unknown"),
+                str(_get_feature_prop(properties, "status", "Status") or "Unknown"),
+                str(_get_feature_prop(properties, "county", "County") or ""),
+                str(state_value),
+                _as_float(_get_feature_prop(properties, "max_volt", "Max_Volt"), default=None),
+                _as_float(_get_feature_prop(properties, "min_volt", "Min_Volt"), default=None),
+                int(_as_float(_get_feature_prop(properties, "lines", "Lines"), default=0)),
+                str(_get_feature_prop(properties, "naics_desc", "NAICS_Desc") or "Unknown"),
+                geom_str,
+            )
+        )
+
+    cursor.executemany(
+        """
+        INSERT INTO substations (
+            facility_name, sub_type, status, county, state,
+            max_voltage_kv, min_voltage_kv, line_count, naics_desc, geojson_geom
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        records,
+    )
+
+    conn.commit()
+    conn.close()
+    print(f"Substation database updated at {db_path}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ingest transmission lines into SQLite")
     parser.add_argument("--refresh", action="store_true", help="Force a new download of the GeoJSON dataset")
@@ -405,6 +508,11 @@ if __name__ == "__main__":
     )
     build_power_plants_db(
         geojson_path="power_plants.gpkg",
+        db_path=args.db,
+        force_download=args.refresh,
+    )
+    build_substations_db(
+        geojson_path="substations.gpkg",
         db_path=args.db,
         force_download=args.refresh,
     )

@@ -60,6 +60,10 @@ export interface SubstationProperties {
   max_voltage_kv: number | null;
   min_voltage_kv: number | null;
   line_count: number | null;
+  // Inferred from nearby transmission lines (see ingest_power_grid.py's
+  // _link_substations_to_nearby_line_owners) — not an authoritative
+  // ownership record, and can be null/empty if nothing resolved nearby.
+  nearby_line_owners: string[] | null;
 }
 
 // Mirrors backend/ingest_industrial_convergence.py's flattened

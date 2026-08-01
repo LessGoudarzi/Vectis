@@ -22,6 +22,7 @@ function toTitleCase(key: string): string {
 
 function formatValue(key: string, value: unknown): string {
   if (value === null || value === undefined || value === '') return '—';
+  if (Array.isArray(value)) return value.length > 0 ? value.join(', ') : '—';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (typeof value === 'number') {
     if (value === MISSING_NUMBER_SENTINEL) return 'Unknown';

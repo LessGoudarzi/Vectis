@@ -21,6 +21,14 @@ import duckdb
 
 logger = logging.getLogger("uvicorn")
 
+# HIFLD substations are usually digitized right at (or within ~100m of) a
+# transmission line vertex — verified against the real data before picking
+# this threshold: 0.01deg (~1.1km) resolves ~82% of substations to at least
+# one valid owner, with diminishing returns and rising false-association
+# risk past that (see the investigation in conversation / PR description).
+SUBSTATION_OWNER_JOIN_BUFFER_DEG = 0.01
+_INVALID_OWNER_VALUES = ("NOT AVAILABLE", "Unknown", "")
+
 
 def _mercator_to_lonlat(x: float, y: float) -> list[float]:
     """Inverse Web Mercator projection, ported from power/app.py."""
@@ -87,7 +95,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         CREATE TABLE substations (
             id INTEGER, facility_name TEXT, sub_type TEXT, status TEXT,
             county TEXT, state TEXT, max_voltage_kv DOUBLE, min_voltage_kv DOUBLE,
-            line_count INTEGER, geom GEOMETRY
+            line_count INTEGER, nearby_line_owners VARCHAR[], geom GEOMETRY
         )
         """
     )
@@ -133,7 +141,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
     )
     if substation_rows:
         conn.executemany(
-            "INSERT INTO substations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
+            "INSERT INTO substations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ST_GeomFromGeoJSON(?))",
             [
                 (
                     row["id"], row["facility_name"], row["sub_type"], row["status"], row["county"], row["state"],
@@ -144,4 +152,36 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
             ],
         )
 
+    if line_rows and substation_rows:
+        _link_substations_to_nearby_line_owners(conn)
+
     return {"power_grid": len(line_rows), "power_plants": len(plant_rows), "substations": len(substation_rows)}
+
+
+def _link_substations_to_nearby_line_owners(conn: duckdb.DuckDBPyConnection) -> None:
+    """Derive each substation's `nearby_line_owners` from transmission
+    lines within SUBSTATION_OWNER_JOIN_BUFFER_DEG. HIFLD substation data
+    has no owner field of its own, so this is an inferred/proximity-based
+    association, not an authoritative ownership record — a substation can
+    legitimately show multiple owners if it's an interconnection point.
+    """
+    conn.execute("CREATE INDEX IF NOT EXISTS power_grid_geom_rtree ON power_grid USING RTREE (geom)")
+    invalid_owners = ", ".join(f"'{v}'" for v in _INVALID_OWNER_VALUES)
+    conn.execute(
+        f"""
+        UPDATE substations
+        SET nearby_line_owners = (
+            SELECT list(DISTINCT g.owner)
+            FROM power_grid g
+            WHERE ST_DWithin(substations.geom, g.geom, {SUBSTATION_OWNER_JOIN_BUFFER_DEG})
+              AND g.owner NOT IN ({invalid_owners})
+        )
+        """
+    )
+    total, resolved = conn.execute(
+        "SELECT COUNT(*), COUNT(*) FILTER (len(nearby_line_owners) >= 1) FROM substations"
+    ).fetchone()
+    logger.info(
+        f"Resolved nearby_line_owners for {resolved}/{total} substations "
+        f"({100 * resolved / total:.1f}%) within {SUBSTATION_OWNER_JOIN_BUFFER_DEG}deg"
+    )

@@ -1,14 +1,12 @@
 import { GeoJsonLayer } from '@deck.gl/layers';
 import { ActiveHighlight, LayerConfig, LayerId } from '../types/gis';
-import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties, SubstationProperties, AutoPlantProperties, NercSubregionProperties } from '../types/gis';
+import { PowerPlantProperties, TransmissionLineProperties, SubstationProperties, AutoPlantProperties, NercSubregionProperties } from '../types/gis';
 import { fuelColorHex, voltageBucketColorHex, autoPlantColorHex, nercRegionColorHex, getFeatureCategoryLabel } from '../legends';
 
 const hexToRgb = (hex: string): [number, number, number] => {
   const num = parseInt(hex.replace('#', ''), 16);
   return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
 };
-
-const BOTTLENECK_COLOR: [number, number, number] = [239, 68, 68]; // red-500, flags an energy-constrained facility
 
 function filterByActiveCategories(layerId: LayerId, data: any, activeCategories: Set<string>) {
   if (!data?.features) return data;
@@ -21,13 +19,13 @@ function filterByActiveCategories(layerId: LayerId, data: any, activeCategories:
 }
 
 // When an investigative highlight is active (owner search or network
-// trace — see types/gis.ts's ActiveHighlight), matching features render
-// at (boosted) full alpha and everything else fades — vs. the category
-// legend, which removes non-matches outright. The point is "show me this
-// in context," not isolation.
-function highlightAlpha(baseAlpha: number, isMatch: boolean, highlightActive: boolean): number {
+// trace — see types/gis.ts's ActiveHighlight): matches always get
+// boosted alpha; exempt features (e.g. network trace's "same home
+// subregion" features) hold their normal alpha; everything else dims.
+function highlightAlpha(baseAlpha: number, isMatch: boolean, isExempt: boolean, highlightActive: boolean): number {
   if (!highlightActive) return baseAlpha;
-  return isMatch ? Math.min(255, baseAlpha + 25) : Math.round(baseAlpha * 0.12);
+  if (isMatch) return Math.min(255, baseAlpha + 25);
+  return isExempt ? baseAlpha : Math.round(baseAlpha * 0.12);
 }
 
 export function createDeckGLLayers(
@@ -40,14 +38,15 @@ export function createDeckGLLayers(
 ) {
   const sorted = [...configs].sort((a, b) => a.zIndex - b.zIndex);
   const highlightActive = highlight != null;
+
   return sorted
     .filter((config) => config.visible)
     .map((config) => {
-      const rgb = hexToRgb(config.colorHex);
       const rawData = datasets[config.id];
       if (!rawData) return null;
       const data = filterByActiveCategories(config.id, rawData, categoryFilters[config.id]);
       const isMatch = (f: any) => highlight?.isMatch(config.id, f.properties) ?? false;
+      const isExempt = (f: any) => highlight?.isExempt?.(config.id, f.properties) ?? false;
       const colorOverride = highlight?.colorOverrideHex?.[config.id];
       const colorOverrideRgb = colorOverride ? hexToRgb(colorOverride) : null;
 
@@ -61,13 +60,13 @@ export function createDeckGLLayers(
             // Colored by facility_type (see legends.ts's AUTO_PLANTS_LEGEND) —
             // Assembly / Battery / Engine / Transmission / Body-Stamping /
             // Other Major Component, matching the real data's categories.
-            pointRadiusMinPixels: 6,
-            pointRadiusMaxPixels: 6,
+            pointRadiusMinPixels: 8,
+            pointRadiusMaxPixels: 8,
             getFillColor: (f: any) => {
               const props = f.properties as AutoPlantProperties;
-              return [...hexToRgb(autoPlantColorHex(props.facility_type)), highlightAlpha(220, isMatch(f), highlightActive)];
+              return [...hexToRgb(autoPlantColorHex(props.facility_type)), highlightAlpha(220, isMatch(f), isExempt(f), highlightActive)];
             },
-            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(255, isMatch(f), highlightActive)],
+            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(255, isMatch(f), isExempt(f), highlightActive)],
             getLineWidth: 2,
             lineWidthMinPixels: 2,
             updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
@@ -87,7 +86,7 @@ export function createDeckGLLayers(
               const props = f.properties as TransmissionLineProperties;
               const match = isMatch(f);
               const baseColor = match && colorOverrideRgb ? colorOverrideRgb : hexToRgb(voltageBucketColorHex(props.voltage));
-              return [...baseColor, highlightAlpha(220, match, highlightActive)];
+              return [...baseColor, highlightAlpha(220, match, isExempt(f), highlightActive)];
             },
             getLineWidth: (f: any) => {
               const props = f.properties as TransmissionLineProperties;
@@ -119,9 +118,9 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 30,
             getFillColor: (f: any) => {
               const props = f.properties as PowerPlantProperties;
-              return [...hexToRgb(fuelColorHex(props.fuel_type)), highlightAlpha(200, isMatch(f), highlightActive)];
+              return [...hexToRgb(fuelColorHex(props.fuel_type)), highlightAlpha(200, isMatch(f), isExempt(f), highlightActive)];
             },
-            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(180, isMatch(f), highlightActive)],
+            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(180, isMatch(f), isExempt(f), highlightActive)],
             getLineWidth: 1,
             lineWidthMinPixels: 1,
             updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
@@ -147,9 +146,9 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 14,
             getFillColor: (f: any) => {
               const props = f.properties as SubstationProperties;
-              return [...hexToRgb(voltageBucketColorHex(props.max_voltage_kv)), highlightAlpha(210, isMatch(f), highlightActive)];
+              return [...hexToRgb(voltageBucketColorHex(props.max_voltage_kv)), highlightAlpha(210, isMatch(f), isExempt(f), highlightActive)];
             },
-            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(160, isMatch(f), highlightActive)],
+            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(160, isMatch(f), isExempt(f), highlightActive)],
             getLineWidth: 1,
             lineWidthMinPixels: 1,
             updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
@@ -160,7 +159,12 @@ export function createDeckGLLayers(
           return new GeoJsonLayer({
             id: config.id,
             data,
-            pickable: true,
+            // Not pickable: this is a giant background polygon covering the
+            // whole map at the bottom of the stack — leaving it pickable
+            // meant any click that missed a small point marker above it
+            // (e.g. auto-plants' 8px dots) fell through to this layer
+            // instead, pinning a tooltip with no useful actions.
+            pickable: false,
             opacity: config.opacity,
             // Background context, not data — kept deliberately faint so it
             // never competes with the layers on top of it. A network trace
@@ -180,7 +184,7 @@ export function createDeckGLLayers(
               const props = f.properties as NercSubregionProperties;
               const match = isMatch(f);
               const baseColor = match && colorOverrideRgb ? colorOverrideRgb : hexToRgb(nercRegionColorHex(props.nerc_region));
-              return [...baseColor, highlightAlpha(140, match, highlightActive)];
+              return [...baseColor, highlightAlpha(140, match, false, highlightActive)];
             },
             getLineWidth: (f: any) => (highlightActive && isMatch(f) ? 3 : 1),
             updateTriggers: {
@@ -188,35 +192,6 @@ export function createDeckGLLayers(
               getLineColor: [highlightVersion],
               getLineWidth: [highlightVersion],
             },
-            onHover,
-          });
-
-        case 'industrial-convergence':
-          return new GeoJsonLayer({
-            id: config.id,
-            data,
-            pickable: true,
-            opacity: config.opacity,
-            pointRadiusUnits: 'meters',
-            pointRadiusScale: 1,
-            getPointRadius: (f: any) => {
-              const props = f.properties as IndustrialConvergenceProperties;
-              const output = props.estimated_annual_output_usd ?? 0;
-              // sqrt scaling keeps the largest facilities from swamping the map
-              return 3000 + Math.sqrt(output) * 2;
-            },
-            pointRadiusMinPixels: 5,
-            pointRadiusMaxPixels: 40,
-            getFillColor: (f: any) => {
-              const props = f.properties as IndustrialConvergenceProperties;
-              const alpha = highlightAlpha(220, isMatch(f), highlightActive);
-              return props.energy_bottleneck_flag ? [...BOTTLENECK_COLOR, alpha] : [...rgb, alpha];
-            },
-            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(255, isMatch(f), highlightActive)],
-            getLineWidth: 2,
-            lineWidthMinPixels: 1,
-            updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
-            onHover,
           });
 
         default:

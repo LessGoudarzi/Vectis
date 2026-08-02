@@ -96,6 +96,21 @@ def _load_sqlite_rows(sqlite_db_path: Path, table: str, columns: list[str]) -> l
     return rows
 
 
+def _load_node_subregions(sqlite_db_path: Path) -> dict[int, Optional[str]]:
+    """node_id -> subregion_name, from power/build_grid_topology.py's
+    output — empty if that script hasn't been run yet against this db."""
+    conn = sqlite3.connect(str(sqlite_db_path))
+    conn.row_factory = sqlite3.Row
+    try:
+        if not conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='grid_nodes'"
+        ).fetchone():
+            return {}
+        return {row["node_id"]: row["subregion_name"] for row in conn.execute("SELECT node_id, subregion_name FROM grid_nodes")}
+    finally:
+        conn.close()
+
+
 def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Path) -> dict[str, int]:
     """(Re)create the `power_grid`, `power_plants`, and `substations`
     DuckDB tables from the real data in power/ingest_to_sqlite.py's
@@ -110,7 +125,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         """
         CREATE TABLE power_grid (
             id INTEGER, owner TEXT, voltage INTEGER, volt_class TEXT,
-            status TEXT, line_type TEXT, length_miles DOUBLE, geom GEOMETRY
+            status TEXT, line_type TEXT, length_miles DOUBLE, subregion_name TEXT, geom GEOMETRY
         )
         """
     )
@@ -119,7 +134,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         """
         CREATE TABLE power_plants (
             id INTEGER, plant_name TEXT, fuel_type TEXT, capacity_mw DOUBLE,
-            owner TEXT, state TEXT, geom GEOMETRY
+            owner TEXT, state TEXT, subregion_name TEXT, geom GEOMETRY
         )
         """
     )
@@ -129,7 +144,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         CREATE TABLE substations (
             id INTEGER, facility_name TEXT, sub_type TEXT, status TEXT,
             county TEXT, state TEXT, max_voltage_kv DOUBLE, min_voltage_kv DOUBLE,
-            line_count INTEGER, nearby_line_owners VARCHAR[], geom GEOMETRY
+            line_count INTEGER, nearby_line_owners VARCHAR[], subregion_name TEXT, geom GEOMETRY
         )
         """
     )
@@ -138,19 +153,26 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         logger.warning(f"No SQLite source at {sqlite_db_path}; power_grid/power_plants/substations will be empty.")
         return {"power_grid": 0, "power_plants": 0, "substations": 0}
 
-    line_rows = _load_sqlite_rows(
-        sqlite_db_path, "transmission_lines", ["id", "owner", "voltage", "volt_class", "status", "line_type"]
-    )
+    line_columns = ["id", "owner", "voltage", "volt_class", "status", "line_type"]
+    sconn = sqlite3.connect(str(sqlite_db_path))
+    has_from_node_id = any(row[1] == "from_node_id" for row in sconn.execute("PRAGMA table_info(transmission_lines)"))
+    sconn.close()
+    if has_from_node_id:
+        line_columns.append("from_node_id")
+    node_subregion = _load_node_subregions(sqlite_db_path) if has_from_node_id else {}
+
+    line_rows = _load_sqlite_rows(sqlite_db_path, "transmission_lines", line_columns)
     if line_rows:
         reprojected_lines = [
             (row, _reproject_geometry(json.loads(row["geojson_geom"]))) for row in line_rows
         ]
         conn.executemany(
-            "INSERT INTO power_grid VALUES (?, ?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
+            "INSERT INTO power_grid VALUES (?, ?, ?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
             [
                 (
                     row["id"], row["owner"], row["voltage"], row["volt_class"], row["status"], row["line_type"],
                     _geometry_length_miles(geometry),
+                    node_subregion.get(row["from_node_id"]) if has_from_node_id else None,
                     json.dumps(geometry),
                 )
                 for row, geometry in reprojected_lines
@@ -162,7 +184,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
     )
     if plant_rows:
         conn.executemany(
-            "INSERT INTO power_plants VALUES (?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
+            "INSERT INTO power_plants VALUES (?, ?, ?, ?, ?, ?, NULL, ST_GeomFromGeoJSON(?))",
             [
                 (
                     row["id"], row["plant_name"], row["fuel_type"], row["capacity_mw"], row["owner"], row["state"],
@@ -179,7 +201,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
     )
     if substation_rows:
         conn.executemany(
-            "INSERT INTO substations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ST_GeomFromGeoJSON(?))",
+            "INSERT INTO substations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ST_GeomFromGeoJSON(?))",
             [
                 (
                     row["id"], row["facility_name"], row["sub_type"], row["status"], row["county"], row["state"],
@@ -243,6 +265,34 @@ def build_nerc_subregions_table(conn: duckdb.DuckDBPyConnection, sqlite_db_path:
             ],
         )
     return len(rows)
+
+
+def tag_points_with_nerc_subregion(conn: duckdb.DuckDBPyConnection, table_names: list[str]) -> None:
+    """Point-in-polygon tag each table's rows with their NERC subregion,
+    against the nerc_subregions polygons already loaded. Call after both
+    the target tables and nerc_subregions exist - a no-op if
+    nerc_subregions is empty (jurisdiction_nerc_subregion_v1/ wasn't
+    available when the topology was built).
+
+    power_grid's subregion_name is set separately, at insert time from
+    its from_node_id (see build_power_grid_tables) - a line isn't a
+    single point, so a direct polygon test doesn't apply the same way,
+    and reusing the trace's own node-based subregion keeps what "in the
+    home subregion" means consistent between the map and the trace.
+    """
+    subregion_count = conn.execute("SELECT COUNT(*) FROM nerc_subregions").fetchone()[0]
+    if not subregion_count:
+        return
+    conn.execute("CREATE INDEX IF NOT EXISTS nerc_subregions_rtree ON nerc_subregions USING RTREE (geom)")
+    for table in table_names:
+        conn.execute(
+            f"""
+            UPDATE {table}
+            SET subregion_name = (
+                SELECT s.subregion_name FROM nerc_subregions s WHERE ST_Contains(s.geom, {table}.geom) LIMIT 1
+            )
+            """
+        )
 
 
 def _link_substations_to_nearby_line_owners(conn: duckdb.DuckDBPyConnection) -> None:

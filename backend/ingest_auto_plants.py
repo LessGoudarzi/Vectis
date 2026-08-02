@@ -54,7 +54,7 @@ def build_auto_plants_table(conn: duckdb.DuckDBPyConnection, json_path: Path) ->
         CREATE TABLE auto_plants (
             id INTEGER, facility_name TEXT, oem_or_parent TEXT, facility_type TEXT,
             state TEXT, status TEXT, products TEXT, approximate_employment INTEGER,
-            annual_capacity_estimate TEXT, conversion_summary TEXT, geom GEOMETRY
+            annual_capacity_estimate TEXT, conversion_summary TEXT, subregion_name TEXT, geom GEOMETRY
         )
         """
     )
@@ -72,8 +72,8 @@ def build_auto_plants_table(conn: duckdb.DuckDBPyConnection, json_path: Path) ->
             INSERT INTO auto_plants (
                 id, facility_name, oem_or_parent, facility_type, state, status,
                 products, approximate_employment, annual_capacity_estimate,
-                conversion_summary, geom
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ST_Point(?, ?))
+                conversion_summary, subregion_name, geom
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ST_Point(?, ?))
             """,
             [(i + 1, *rec) for i, rec in enumerate(records)],
         )

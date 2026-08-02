@@ -6,7 +6,7 @@ import { useGISData } from '../hooks/useGISData';
 import { useNetworkTrace } from '../hooks/useNetworkTrace';
 import { createDeckGLLayers } from '../layers/layerFactory';
 import { createOwnerHighlight } from '../owners';
-import { createTraceHighlight } from '../networkTrace';
+import { createTraceHighlight, TraceableLayerId } from '../networkTrace';
 import { ActiveHighlight } from '../types/gis';
 import { LayerManager } from './LayerManager';
 import { FeatureTooltip } from './FeatureTooltip';
@@ -73,10 +73,10 @@ export const GISMapContainer: React.FC = () => {
   );
 
   const handleTracePlant = useCallback(
-    (plantId: number, plantName: string) => {
+    (layerId: TraceableLayerId, plantId: number, plantName: string) => {
       setOwnerQuery('');
       setPinnedInfo(null);
-      trace.startTrace(plantId, plantName);
+      trace.startTrace(layerId, plantId, plantName);
     },
     [trace]
   );
@@ -95,13 +95,13 @@ export const GISMapContainer: React.FC = () => {
       if (trace.active) {
         const homeSubregion = trace.result?.status === 'ok' ? trace.result.home_subregion : null;
         return {
-          highlight: createTraceHighlight(trace.plantId!, trace.revealedLineIds, homeSubregion),
+          highlight: createTraceHighlight(trace.sourceLayerId!, trace.plantId!, trace.revealedLineIds, homeSubregion),
           highlightVersion: trace.revealedMiles,
         };
       }
       const ownerHighlight = createOwnerHighlight(ownerQuery);
       return { highlight: ownerHighlight, highlightVersion: ownerQuery };
-    }, [trace.active, trace.plantId, trace.revealedLineIds, trace.revealedMiles, trace.result, ownerQuery]);
+    }, [trace.active, trace.sourceLayerId, trace.plantId, trace.revealedLineIds, trace.revealedMiles, trace.result, ownerQuery]);
 
   const deckLayers = useMemo(
     () => createDeckGLLayers(layers, datasets, categoryFilters, highlight, highlightVersion, setHoverInfo),

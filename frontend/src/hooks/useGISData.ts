@@ -9,14 +9,13 @@ export function useGISData() {
   useEffect(() => {
     async function loadLayers() {
       try {
-        const [autoPlantsRes, powerGridRes, powerPlantsRes, substationsRes, nercSubregionsRes, industrialConvergenceRes] =
+        const [autoPlantsRes, powerGridRes, powerPlantsRes, substationsRes, nercSubregionsRes] =
           await Promise.all([
             fetch(`${API_BASE}/auto-plants`),
             fetch(`${API_BASE}/power-grid`),
             fetch(`${API_BASE}/power-plants`),
             fetch(`${API_BASE}/substations`),
             fetch(`${API_BASE}/nerc-subregions`),
-            fetch(`${API_BASE}/industrial-convergence`),
           ]);
 
         const autoPlants = await autoPlantsRes.json();
@@ -24,7 +23,6 @@ export function useGISData() {
         const powerPlants = await powerPlantsRes.json();
         const substations = await substationsRes.json();
         const nercSubregions = await nercSubregionsRes.json();
-        const industrialConvergence = await industrialConvergenceRes.json();
 
         setDatasets({
           'auto-plants': autoPlants,
@@ -32,7 +30,6 @@ export function useGISData() {
           'power-plants': powerPlants,
           substations,
           'nerc-subregions': nercSubregions,
-          'industrial-convergence': industrialConvergence,
         });
       } catch (err) {
         console.error('Failed to load GIS datasets:', err);

@@ -2,6 +2,9 @@ import React from 'react';
 import { X, Zap } from 'lucide-react';
 import { LayerId } from '../types/gis';
 import { getFeatureOwners } from '../owners';
+import { TraceableLayerId } from '../networkTrace';
+
+const TRACEABLE_LAYERS = new Set<string>(['power-plants', 'auto-plants']);
 
 interface FeatureTooltipProps {
   x: number;
@@ -15,7 +18,7 @@ interface FeatureTooltipProps {
   // actually usable.
   pinned?: boolean;
   onFilterOwner?: (owner: string) => void;
-  onTracePlant?: (plantId: number, plantName: string) => void;
+  onTracePlant?: (layerId: TraceableLayerId, facilityId: number, facilityName: string) => void;
   onClose?: () => void;
 }
 
@@ -60,18 +63,19 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
 }) => {
   const entries = Object.entries(properties ?? {}).filter(([key]) => !HIDDEN_KEYS.has(key));
   const owners = pinned ? getFeatureOwners(layerId as LayerId, properties) : [];
-  const canTrace = pinned && layerId === 'power-plants' && onTracePlant && properties?.id != null;
+  const canTrace = pinned && TRACEABLE_LAYERS.has(layerId) && onTracePlant && properties?.id != null;
+  const facilityName = properties?.plant_name ?? properties?.facility_name ?? 'Unnamed Facility';
 
   return (
     <div
-      className={`absolute z-30 max-w-xs rounded-lg border p-3 text-xs text-white shadow-xl backdrop-blur-md ${
+      className={`absolute z-30 flex max-h-72 max-w-xs flex-col overflow-hidden rounded-lg border text-xs text-white shadow-xl backdrop-blur-md ${
         pinned
           ? 'pointer-events-auto border-cyan-500/60 bg-slate-900'
           : 'pointer-events-none border-slate-700 bg-slate-900/95'
       }`}
       style={{ left: x + 12, top: y + 12 }}
     >
-      <div className="mb-1.5 flex items-center justify-between border-b border-slate-700/60 pb-1.5">
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-700/60 p-3 pb-1.5">
         <span className="text-[11px] font-bold uppercase tracking-wide text-cyan-400">
           {layerId.replace(/-/g, ' ')}
         </span>
@@ -81,19 +85,15 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
           </button>
         )}
       </div>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-        {entries.map(([key, value]) => (
-          <React.Fragment key={key}>
-            <dt className="text-slate-400">{toTitleCase(key)}</dt>
-            <dd className="text-right font-mono text-slate-200">{formatValue(key, value)}</dd>
-          </React.Fragment>
-        ))}
-      </dl>
 
+      {/* Actions come before the (potentially long) property list — some
+          layers carry a long free-text field (e.g. auto-plants'
+          conversion_summary) that would otherwise push these buttons out
+          of view without scrolling. */}
       {canTrace && (
-        <div className="mt-2.5 border-t border-slate-700/40 pt-2">
+        <div className="shrink-0 px-3 pt-2">
           <button
-            onClick={() => onTracePlant!(properties.id, properties.plant_name ?? 'Unnamed Plant')}
+            onClick={() => onTracePlant!(layerId as TraceableLayerId, properties.id, facilityName)}
             className="flex w-full items-center justify-center gap-1.5 rounded bg-cyan-500/15 px-2 py-1.5 text-[11px] font-medium text-cyan-300 hover:bg-cyan-500/25"
           >
             <Zap className="h-3 w-3" />
@@ -103,7 +103,7 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
       )}
 
       {owners.length > 0 && onFilterOwner && (
-        <div className="mt-2.5 space-y-1 border-t border-slate-700/40 pt-2">
+        <div className="shrink-0 space-y-1 px-3 pt-2">
           {owners.map((owner) => (
             <button
               key={owner}
@@ -115,6 +115,15 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
           ))}
         </div>
       )}
+
+      <dl className="grid min-h-0 flex-1 grid-cols-[auto_1fr] gap-x-3 gap-y-1 overflow-y-auto p-3 pt-2">
+        {entries.map(([key, value]) => (
+          <React.Fragment key={key}>
+            <dt className="text-slate-400">{toTitleCase(key)}</dt>
+            <dd className="text-right font-mono text-slate-200">{formatValue(key, value)}</dd>
+          </React.Fragment>
+        ))}
+      </dl>
     </div>
   );
 };

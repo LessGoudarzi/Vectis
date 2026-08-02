@@ -6,7 +6,7 @@ import duckdb
 from config import settings
 from ingest_auto_plants import build_auto_plants_table
 from ingest_industrial_convergence import build_industrial_convergence_table
-from ingest_power_grid import build_power_grid_tables
+from ingest_power_grid import build_power_grid_tables, tag_points_with_nerc_subregion
 from trace import GridGraph, find_anchor_node, load_grid_graph, trace_from_node
 
 logger = logging.getLogger("uvicorn")
@@ -27,6 +27,10 @@ class SpatialDatabase:
         self.conn.execute("INSTALL spatial; LOAD spatial;")
         self._seed_auto_plants()
         self._seed_power_grid()
+        # power_grid's subregion_name is set at insert time (from its
+        # from_node_id); these three are points, tagged here via
+        # point-in-polygon against nerc_subregions now that it exists.
+        tag_points_with_nerc_subregion(self.conn, ["power_plants", "substations", "auto_plants"])
         self._seed_industrial_convergence()
         line_length_miles = dict(self.conn.execute("SELECT id, length_miles FROM power_grid").fetchall())
         self.trace_graph: GridGraph = load_grid_graph(POWER_GRID_SQLITE_DB, line_length_miles)
@@ -133,12 +137,20 @@ class SpatialDatabase:
         result = self.conn.execute(query, params).fetchone()
         return result[0] if result and result[0] else '{"type": "FeatureCollection", "features": []}'
 
-    def trace_power_plant(self, plant_id: int, max_miles: float, allow_cross_subregion: bool = False) -> dict:
+    # Any layer with point geometry can be a trace origin, not just power
+    # plants — table name is interpolated below, so this whitelist is
+    # also what stands between the URL path param and SQL injection.
+    TRACE_SOURCE_TABLES = {"power-plants": "power_plants", "auto-plants": "auto_plants"}
+
+    def trace_facility(self, layer_id: str, facility_id: int, max_miles: float, allow_cross_subregion: bool = False) -> dict:
+        table_name = self.TRACE_SOURCE_TABLES.get(layer_id)
+        if table_name is None:
+            return {"status": "not_found"}
         if not self.trace_graph.available:
             return {"status": "unavailable", "detail": "Grid topology not built — run power/build_grid_topology.py."}
 
         row = self.conn.execute(
-            "SELECT ST_X(geom) AS lon, ST_Y(geom) AS lat FROM power_plants WHERE id = ?", [plant_id]
+            f"SELECT ST_X(geom) AS lon, ST_Y(geom) AS lat FROM {table_name} WHERE id = ?", [facility_id]
         ).fetchone()
         if row is None:
             return {"status": "not_found"}

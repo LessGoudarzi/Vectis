@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { fetchTrace, TraceResult } from '../networkTrace';
+import { fetchTrace, TraceableLayerId, TraceResult } from '../networkTrace';
 
 const INITIAL_MAX_MILES = 250;
 const TRACE_FURTHER_STEP_MILES = 250;
 const REVEAL_MILES_PER_SECOND = 60;
 
 export function useNetworkTrace() {
+  const [sourceLayerId, setSourceLayerId] = useState<TraceableLayerId | null>(null);
   const [plantId, setPlantId] = useState<number | null>(null);
   const [plantName, setPlantName] = useState<string | null>(null);
   const [maxMiles, setMaxMiles] = useState(INITIAL_MAX_MILES);
@@ -29,14 +30,15 @@ export function useNetworkTrace() {
   }, [result, revealedMiles]);
 
   const runFetch = useCallback(
-    async (id: number, name: string, requestedMaxMiles: number, requestedCrossSubregion: boolean) => {
+    async (layerId: TraceableLayerId, id: number, name: string, requestedMaxMiles: number, requestedCrossSubregion: boolean) => {
       setLoading(true);
+      setSourceLayerId(layerId);
       setPlantId(id);
       setPlantName(name);
       setMaxMiles(requestedMaxMiles);
       setAllowCrossSubregion(requestedCrossSubregion);
       try {
-        const data = await fetchTrace(id, requestedMaxMiles, requestedCrossSubregion);
+        const data = await fetchTrace(layerId, id, requestedMaxMiles, requestedCrossSubregion);
         setResult(data);
         setRevealedMiles(0);
         setPlaying(data.status === 'ok');
@@ -51,7 +53,7 @@ export function useNetworkTrace() {
   );
 
   const startTrace = useCallback(
-    (id: number, name: string) => runFetch(id, name, INITIAL_MAX_MILES, false),
+    (layerId: TraceableLayerId, id: number, name: string) => runFetch(layerId, id, name, INITIAL_MAX_MILES, false),
     [runFetch]
   );
 
@@ -59,15 +61,16 @@ export function useNetworkTrace() {
   // enforces that regardless of max_miles — so this behaves differently
   // depending on why the trace stopped last time.
   const traceFurther = useCallback(() => {
-    if (plantId == null || plantName == null) return;
+    if (sourceLayerId == null || plantId == null || plantName == null) return;
     if (result?.stopped_reason === 'subregion_boundary') {
-      runFetch(plantId, plantName, maxMiles, true);
+      runFetch(sourceLayerId, plantId, plantName, maxMiles, true);
     } else {
-      runFetch(plantId, plantName, maxMiles + TRACE_FURTHER_STEP_MILES, allowCrossSubregion);
+      runFetch(sourceLayerId, plantId, plantName, maxMiles + TRACE_FURTHER_STEP_MILES, allowCrossSubregion);
     }
-  }, [plantId, plantName, maxMiles, allowCrossSubregion, result, runFetch]);
+  }, [sourceLayerId, plantId, plantName, maxMiles, allowCrossSubregion, result, runFetch]);
 
   const clearTrace = useCallback(() => {
+    setSourceLayerId(null);
     setPlantId(null);
     setPlantName(null);
     setResult(null);
@@ -102,6 +105,7 @@ export function useNetworkTrace() {
   }, [playing, maxDistance]);
 
   return {
+    sourceLayerId,
     plantId,
     plantName,
     result,

@@ -96,11 +96,6 @@ export function nercRegionColorHex(nercRegion: string | null | undefined): strin
   return NERC_REGION_COLOR_BY_LABEL[nercRegion ?? ''] ?? '#64748b';
 }
 
-export const INDUSTRIAL_CONVERGENCE_LEGEND: LegendEntry[] = [
-  { label: 'Facility', colorHex: '#A855F7' },
-  { label: 'Energy bottleneck', colorHex: '#EF4444' },
-];
-
 export const LAYER_LEGENDS: Record<LayerId, LegendEntry[]> = {
   'auto-plants': AUTO_PLANTS_LEGEND,
   'power-grid': VOLTAGE_LEGEND,
@@ -112,7 +107,6 @@ export const LAYER_LEGENDS: Record<LayerId, LegendEntry[]> = {
   // doesn't affect the Transmission Lines layer.
   substations: VOLTAGE_LEGEND,
   'nerc-subregions': NERC_REGION_LEGEND,
-  'industrial-convergence': INDUSTRIAL_CONVERGENCE_LEGEND,
 };
 
 // The legend label a given feature belongs to, for both coloring and
@@ -127,8 +121,6 @@ export function getFeatureCategoryLabel(layerId: LayerId, properties: any): stri
       return voltageBucketLabel(properties?.max_voltage_kv);
     case 'nerc-subregions':
       return NERC_REGION_COLOR_BY_LABEL[properties?.nerc_region] ? properties.nerc_region : 'Unknown';
-    case 'industrial-convergence':
-      return properties?.energy_bottleneck_flag ? 'Energy bottleneck' : 'Facility';
     case 'auto-plants':
       return AUTO_PLANTS_COLOR_BY_LABEL[properties?.facility_type] ? properties.facility_type : 'Other Major Component';
     default:

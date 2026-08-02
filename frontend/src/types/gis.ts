@@ -1,4 +1,4 @@
-export type LayerId = 'auto-plants' | 'power-grid' | 'power-plants' | 'substations' | 'nerc-subregions' | 'industrial-convergence';
+export type LayerId = 'auto-plants' | 'power-grid' | 'power-plants' | 'substations' | 'nerc-subregions';
 
 export interface LayerConfig {
   id: LayerId;
@@ -18,12 +18,18 @@ export interface LegendEntry {
 // Shared by owner search and network tracing: exactly one "investigative
 // mode" is active on the map at a time (see owners.ts's
 // createOwnerHighlight, networkTrace.ts's createTraceHighlight).
-// Matching features get boosted alpha (and optionally a color override,
-// e.g. traced lines rendering in a distinct "energized" color instead of
-// their normal voltage-bucket color); everything else dims — see
-// layerFactory.ts's highlightAlpha.
+// Three tiers per feature (see layerFactory.ts's highlightAlpha):
+//   1. isMatch        -> boosted alpha (+ optional color override)
+//   2. isExempt        -> normal alpha, no dim (but no boost either)
+//   3. neither          -> dimmed
+// Owner search has no exemptions (dims everything but direct matches, to
+// isolate a company's footprint). Network trace exempts every feature in
+// the traced facility's home NERC subregion, not just the traced lines
+// themselves, so the whole local grid stays visible for context — only
+// stuff outside that subregion dims.
 export interface ActiveHighlight {
   isMatch: (layerId: LayerId, properties: any) => boolean;
+  isExempt?: (layerId: LayerId, properties: any) => boolean;
   colorOverrideHex?: Partial<Record<LayerId, string>>;
 }
 
@@ -39,6 +45,10 @@ export interface AutoPlantProperties {
   approximate_employment: number | null;
   annual_capacity_estimate: string | null;
   conversion_summary: string | null;
+  // Point-in-polygon tagged against nerc_subregions — null for the ~1%
+  // outside CONUS coverage (see ingest_power_grid.py's
+  // tag_points_with_nerc_subregion).
+  subregion_name: string | null;
 }
 
 // Mirrors backend/ingest_power_grid.py's power_grid table columns
@@ -49,6 +59,10 @@ export interface TransmissionLineProperties {
   volt_class: string;
   status: string;
   line_type: string;
+  // Derived from the line's from_node_id at ingest time, not a separate
+  // polygon test — keeps "in the home subregion" consistent with what
+  // trace.py's own subregion-bounded stopping condition means.
+  subregion_name: string | null;
 }
 
 // Mirrors backend/ingest_power_grid.py's power_plants table columns
@@ -59,6 +73,7 @@ export interface PowerPlantProperties {
   capacity_mw: number | null;
   owner: string;
   state: string;
+  subregion_name: string | null;
 }
 
 // Mirrors backend/ingest_power_grid.py's substations table columns
@@ -76,6 +91,7 @@ export interface SubstationProperties {
   // _link_substations_to_nearby_line_owners) — not an authoritative
   // ownership record, and can be null/empty if nothing resolved nearby.
   nearby_line_owners: string[] | null;
+  subregion_name: string | null;
 }
 
 // Mirrors backend/ingest_power_grid.py's nerc_subregions table columns —
@@ -86,6 +102,9 @@ export interface NercSubregionProperties {
   subregion_name: string;
 }
 
+// Not currently a rendered layer (dropped from the map — see LayerId —
+// until the agent swarm actually produces real payloads; the backend
+// table/endpoint are still there). Kept here for when it comes back.
 // Mirrors backend/ingest_industrial_convergence.py's flattened
 // IndustrialConvergencePayload columns (see vectis-yield-spec/COMPANY.md
 // for the full nested schema the agent swarm produces).

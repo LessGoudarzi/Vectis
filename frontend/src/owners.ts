@@ -49,7 +49,11 @@ export function collectDistinctOwners(datasets: Record<string, any>): string[] {
 
 export function createOwnerHighlight(query: string): ActiveHighlight | null {
   if (!query.trim()) return null;
-  return { isMatch: (layerId, properties) => featureMatchesOwnerQuery(layerId, properties, query) };
+  return {
+    isMatch: (layerId, properties) => featureMatchesOwnerQuery(layerId, properties, query),
+    // No exemptions — dims everything but direct matches, to isolate the
+    // searched-for company's footprint.
+  };
 }
 
 export function countMatchesByLayer(

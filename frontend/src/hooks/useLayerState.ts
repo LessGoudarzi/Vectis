@@ -10,7 +10,6 @@ export const INITIAL_LAYERS: LayerConfig[] = [
   { id: 'substations', name: 'Substations', visible: true, opacity: 0.9, colorHex: '#FBBF24', zIndex: 2, legendVisible: true },
   { id: 'auto-plants', name: 'Automobile Manufacturing Facilities', visible: true, opacity: 0.9, colorHex: '#F59E0B', zIndex: 3, legendVisible: true },
   { id: 'power-plants', name: 'Power Plants', visible: true, opacity: 0.9, colorHex: '#22C55E', zIndex: 4, legendVisible: true },
-  { id: 'industrial-convergence', name: 'Industrial Convergence Facilities', visible: true, opacity: 0.9, colorHex: '#A855F7', zIndex: 5, legendVisible: false },
 ];
 
 function allCategoryLabels(id: LayerId): Set<string> {

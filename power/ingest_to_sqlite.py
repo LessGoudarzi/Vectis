@@ -1,5 +1,6 @@
 import argparse
 import json
+import re
 import sqlite3
 import urllib.request
 import zipfile
@@ -494,6 +495,78 @@ def build_substations_db(
     print(f"Substation database updated at {db_path}")
 
 
+def build_nerc_subregions_db(
+    geojson_path="nerc_subregions.gpkg",
+    db_path="transmission.db",
+):
+    """No known GEM tool download URL for this layer (manually sourced),
+    so unlike the other three builders this one degrades gracefully rather
+    than raising when the source file isn't present — the trace feature
+    falls back to a plain mileage cap when nerc_subregions is empty.
+    """
+    geojson_path = Path(geojson_path)
+    db_path = Path(db_path)
+
+    default_candidate = Path(__file__).with_name("nerc_subregions.gpkg")
+    bundled_candidates = [
+        Path(__file__).resolve().parent.parent / "jurisdiction_nerc_subregion_v1" / "jurisdiction_nerc_subregion_v1.gpkg",
+        Path(__file__).with_name("jurisdiction_nerc_subregion_v1") / "jurisdiction_nerc_subregion_v1.gpkg",
+    ]
+    if geojson_path.name == default_candidate.name and not geojson_path.exists():
+        for candidate in bundled_candidates:
+            if candidate.exists():
+                geojson_path = candidate
+                break
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS nerc_subregions")
+    cursor.execute(
+        """
+        CREATE TABLE nerc_subregions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nerc_region TEXT,
+            subregion_name TEXT,
+            geojson_geom TEXT
+        )
+        """
+    )
+
+    if not geojson_path.exists():
+        print(f"No NERC subregion source found (checked {geojson_path} and bundled candidates); "
+              f"skipping — trace scope will fall back to a mileage cap.")
+        conn.commit()
+        conn.close()
+        return 0
+
+    print(f"Loading NERC subregion dataset from {geojson_path}...")
+    feature_collection = _load_feature_collection(geojson_path)
+    features = feature_collection.get("features", [])
+
+    records = []
+    for feature in features:
+        properties = feature.get("properties") or {}
+        geometry = feature.get("geometry")
+        if geometry is None:
+            continue
+        # "name" holds the parent NERC Region's full name with its acronym
+        # in parens, e.g. "WESTERN ELECTRICITY COORDINATING COUNCIL (WECC)".
+        full_name = str(_get_feature_prop(properties, "name", "Name") or "")
+        acronym_match = re.search(r"\(([^)]+)\)\s*$", full_name)
+        nerc_region = acronym_match.group(1) if acronym_match else (full_name or "Unknown")
+        subregion_name = str(_get_feature_prop(properties, "subname", "Subname") or "Unknown")
+        records.append((nerc_region, subregion_name, json.dumps(geometry)))
+
+    cursor.executemany(
+        "INSERT INTO nerc_subregions (nerc_region, subregion_name, geojson_geom) VALUES (?, ?, ?)",
+        records,
+    )
+    conn.commit()
+    conn.close()
+    print(f"NERC subregion database updated at {db_path} ({len(records)} subregions)")
+    return len(records)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ingest transmission lines into SQLite")
     parser.add_argument("--refresh", action="store_true", help="Force a new download of the GeoJSON dataset")
@@ -515,4 +588,8 @@ if __name__ == "__main__":
         geojson_path="substations.gpkg",
         db_path=args.db,
         force_download=args.refresh,
+    )
+    build_nerc_subregions_db(
+        geojson_path="nerc_subregions.gpkg",
+        db_path=args.db,
     )

@@ -193,7 +193,56 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
     if line_rows and substation_rows:
         _link_substations_to_nearby_line_owners(conn)
 
-    return {"power_grid": len(line_rows), "power_plants": len(plant_rows), "substations": len(substation_rows)}
+    subregion_count = build_nerc_subregions_table(conn, sqlite_db_path)
+
+    return {
+        "power_grid": len(line_rows),
+        "power_plants": len(plant_rows),
+        "substations": len(substation_rows),
+        "nerc_subregions": subregion_count,
+    }
+
+
+def build_nerc_subregions_table(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Path) -> int:
+    """Load the NERC subregion boundary polygons (power/ingest_to_sqlite.py's
+    build_nerc_subregions_db) as a map layer — same table power/build_grid_topology.py
+    already reads to tag grid_nodes, just exposed here for visual context
+    alongside the trace itself.
+    """
+    conn.execute("DROP TABLE IF EXISTS nerc_subregions")
+    conn.execute(
+        """
+        CREATE TABLE nerc_subregions (
+            id INTEGER, nerc_region TEXT, subregion_name TEXT, geom GEOMETRY
+        )
+        """
+    )
+
+    if not sqlite_db_path.exists():
+        return 0
+
+    sconn = sqlite3.connect(str(sqlite_db_path))
+    sconn.row_factory = sqlite3.Row
+    try:
+        if not sconn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='nerc_subregions'"
+        ).fetchone():
+            return 0
+        rows = sconn.execute(
+            "SELECT id, nerc_region, subregion_name, geojson_geom FROM nerc_subregions WHERE geojson_geom IS NOT NULL"
+        ).fetchall()
+    finally:
+        sconn.close()
+
+    if rows:
+        conn.executemany(
+            "INSERT INTO nerc_subregions VALUES (?, ?, ?, ST_GeomFromGeoJSON(?))",
+            [
+                (row["id"], row["nerc_region"], row["subregion_name"], json.dumps(_reproject_geometry(json.loads(row["geojson_geom"]))))
+                for row in rows
+            ],
+        )
+    return len(rows)
 
 
 def _link_substations_to_nearby_line_owners(conn: duckdb.DuckDBPyConnection) -> None:

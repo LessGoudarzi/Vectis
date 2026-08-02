@@ -72,6 +72,30 @@ export function autoPlantColorHex(facilityType: string | null | undefined): stri
   return AUTO_PLANTS_COLOR_BY_LABEL[facilityType ?? ''] ?? '#64748b';
 }
 
+// The 8 top-level NERC regions in the real dataset (jurisdiction_nerc_subregion_v1) —
+// legend groups by region, not by the 22 individual subregion polygons,
+// same "don't clutter the selector" reasoning as owner search: WECC ≈ the
+// Western Interconnection, TRE ≈ ERCOT, the other six are all subdivisions
+// of the single Eastern Interconnection (see trace.py's docstring).
+export const NERC_REGION_LEGEND: LegendEntry[] = [
+  { label: 'WECC', colorHex: '#38bdf8' },
+  { label: 'TRE', colorHex: '#f97316' },
+  { label: 'SPP', colorHex: '#a3e635' },
+  { label: 'MRO', colorHex: '#facc15' },
+  { label: 'RFC', colorHex: '#22c55e' },
+  { label: 'SERC', colorHex: '#f43f5e' },
+  { label: 'NPCC', colorHex: '#a855f7' },
+  { label: 'FRCC', colorHex: '#2dd4bf' },
+];
+
+const NERC_REGION_COLOR_BY_LABEL: Record<string, string> = Object.fromEntries(
+  NERC_REGION_LEGEND.map((entry) => [entry.label, entry.colorHex])
+);
+
+export function nercRegionColorHex(nercRegion: string | null | undefined): string {
+  return NERC_REGION_COLOR_BY_LABEL[nercRegion ?? ''] ?? '#64748b';
+}
+
 export const INDUSTRIAL_CONVERGENCE_LEGEND: LegendEntry[] = [
   { label: 'Facility', colorHex: '#A855F7' },
   { label: 'Energy bottleneck', colorHex: '#EF4444' },
@@ -87,6 +111,7 @@ export const LAYER_LEGENDS: Record<LayerId, LegendEntry[]> = {
   // (see useLayerState.ts's categoryFilters), so toggling a bucket here
   // doesn't affect the Transmission Lines layer.
   substations: VOLTAGE_LEGEND,
+  'nerc-subregions': NERC_REGION_LEGEND,
   'industrial-convergence': INDUSTRIAL_CONVERGENCE_LEGEND,
 };
 
@@ -100,6 +125,8 @@ export function getFeatureCategoryLabel(layerId: LayerId, properties: any): stri
       return FUEL_COLOR_BY_LABEL[properties?.fuel_type] ? properties.fuel_type : 'Other / Unknown';
     case 'substations':
       return voltageBucketLabel(properties?.max_voltage_kv);
+    case 'nerc-subregions':
+      return NERC_REGION_COLOR_BY_LABEL[properties?.nerc_region] ? properties.nerc_region : 'Unknown';
     case 'industrial-convergence':
       return properties?.energy_bottleneck_flag ? 'Energy bottleneck' : 'Facility';
     case 'auto-plants':

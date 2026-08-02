@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
-from routers import layers
+from routers import layers, trace
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -17,6 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(layers.router)
+app.include_router(trace.router)
 
 
 @app.get("/health")

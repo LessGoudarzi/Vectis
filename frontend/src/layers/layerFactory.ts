@@ -1,8 +1,7 @@
 import { GeoJsonLayer } from '@deck.gl/layers';
-import { LayerConfig, LayerId } from '../types/gis';
-import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties, SubstationProperties, AutoPlantProperties } from '../types/gis';
-import { fuelColorHex, voltageBucketColorHex, autoPlantColorHex, getFeatureCategoryLabel } from '../legends';
-import { featureMatchesOwnerQuery } from '../owners';
+import { ActiveHighlight, LayerConfig, LayerId } from '../types/gis';
+import { IndustrialConvergenceProperties, PowerPlantProperties, TransmissionLineProperties, SubstationProperties, AutoPlantProperties, NercSubregionProperties } from '../types/gis';
+import { fuelColorHex, voltageBucketColorHex, autoPlantColorHex, nercRegionColorHex, getFeatureCategoryLabel } from '../legends';
 
 const hexToRgb = (hex: string): [number, number, number] => {
   const num = parseInt(hex.replace('#', ''), 16);
@@ -21,12 +20,13 @@ function filterByActiveCategories(layerId: LayerId, data: any, activeCategories:
   };
 }
 
-// When an owner search is active, matching features render at (boosted)
-// full alpha and everything else fades — vs. the category legend, which
-// removes non-matches outright. Owner search is meant for "show me this
-// company's footprint in context," not isolation.
-function ownerAlpha(baseAlpha: number, isMatch: boolean, searchActive: boolean): number {
-  if (!searchActive) return baseAlpha;
+// When an investigative highlight is active (owner search or network
+// trace — see types/gis.ts's ActiveHighlight), matching features render
+// at (boosted) full alpha and everything else fades — vs. the category
+// legend, which removes non-matches outright. The point is "show me this
+// in context," not isolation.
+function highlightAlpha(baseAlpha: number, isMatch: boolean, highlightActive: boolean): number {
+  if (!highlightActive) return baseAlpha;
   return isMatch ? Math.min(255, baseAlpha + 25) : Math.round(baseAlpha * 0.12);
 }
 
@@ -34,12 +34,12 @@ export function createDeckGLLayers(
   configs: LayerConfig[],
   datasets: Record<string, any>,
   categoryFilters: Record<LayerId, Set<string>>,
-  ownerQuery: string,
+  highlight: ActiveHighlight | null,
+  highlightVersion: string | number,
   onHover: (info: any) => void
 ) {
   const sorted = [...configs].sort((a, b) => a.zIndex - b.zIndex);
-  const searchActive = ownerQuery.trim().length > 0;
-
+  const highlightActive = highlight != null;
   return sorted
     .filter((config) => config.visible)
     .map((config) => {
@@ -47,7 +47,9 @@ export function createDeckGLLayers(
       const rawData = datasets[config.id];
       if (!rawData) return null;
       const data = filterByActiveCategories(config.id, rawData, categoryFilters[config.id]);
-      const isMatch = (f: any) => featureMatchesOwnerQuery(config.id, f.properties, ownerQuery);
+      const isMatch = (f: any) => highlight?.isMatch(config.id, f.properties) ?? false;
+      const colorOverride = highlight?.colorOverrideHex?.[config.id];
+      const colorOverrideRgb = colorOverride ? hexToRgb(colorOverride) : null;
 
       switch (config.id) {
         case 'auto-plants':
@@ -63,12 +65,12 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 6,
             getFillColor: (f: any) => {
               const props = f.properties as AutoPlantProperties;
-              return [...hexToRgb(autoPlantColorHex(props.facility_type)), ownerAlpha(220, isMatch(f), searchActive)];
+              return [...hexToRgb(autoPlantColorHex(props.facility_type)), highlightAlpha(220, isMatch(f), highlightActive)];
             },
-            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(255, isMatch(f), searchActive)],
+            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(255, isMatch(f), highlightActive)],
             getLineWidth: 2,
             lineWidthMinPixels: 2,
-            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
+            updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
             onHover,
           });
 
@@ -79,19 +81,23 @@ export function createDeckGLLayers(
             pickable: true,
             opacity: config.opacity,
             // Colored by voltage bucket (see legends.ts / the Legend toggle
-            // in the layer panel), not the layer's flat swatch color.
+            // in the layer panel) unless a network trace overrides matching
+            // lines to an "energized" highlight color instead.
             getLineColor: (f: any) => {
               const props = f.properties as TransmissionLineProperties;
-              return [...hexToRgb(voltageBucketColorHex(props.voltage)), ownerAlpha(220, isMatch(f), searchActive)];
+              const match = isMatch(f);
+              const baseColor = match && colorOverrideRgb ? colorOverrideRgb : hexToRgb(voltageBucketColorHex(props.voltage));
+              return [...baseColor, highlightAlpha(220, match, highlightActive)];
             },
             getLineWidth: (f: any) => {
               const props = f.properties as TransmissionLineProperties;
-              return props.voltage != null && props.voltage >= 345 ? 4 : 2;
+              const baseWidth = props.voltage != null && props.voltage >= 345 ? 4 : 2;
+              return highlightActive && isMatch(f) ? baseWidth + 1 : baseWidth;
             },
             lineWidthMinPixels: 2,
             updateTriggers: {
-              getLineColor: [config.id, ownerQuery],
-              getLineWidth: [config.id],
+              getLineColor: [highlightVersion],
+              getLineWidth: [highlightVersion],
             },
             onHover,
           });
@@ -113,12 +119,12 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 30,
             getFillColor: (f: any) => {
               const props = f.properties as PowerPlantProperties;
-              return [...hexToRgb(fuelColorHex(props.fuel_type)), ownerAlpha(200, isMatch(f), searchActive)];
+              return [...hexToRgb(fuelColorHex(props.fuel_type)), highlightAlpha(200, isMatch(f), highlightActive)];
             },
-            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(180, isMatch(f), searchActive)],
+            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(180, isMatch(f), highlightActive)],
             getLineWidth: 1,
             lineWidthMinPixels: 1,
-            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
+            updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
             onHover,
           });
 
@@ -141,12 +147,47 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 14,
             getFillColor: (f: any) => {
               const props = f.properties as SubstationProperties;
-              return [...hexToRgb(voltageBucketColorHex(props.max_voltage_kv)), ownerAlpha(210, isMatch(f), searchActive)];
+              return [...hexToRgb(voltageBucketColorHex(props.max_voltage_kv)), highlightAlpha(210, isMatch(f), highlightActive)];
             },
-            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(160, isMatch(f), searchActive)],
+            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(160, isMatch(f), highlightActive)],
             getLineWidth: 1,
             lineWidthMinPixels: 1,
-            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
+            updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
+            onHover,
+          });
+
+        case 'nerc-subregions':
+          return new GeoJsonLayer({
+            id: config.id,
+            data,
+            pickable: true,
+            opacity: config.opacity,
+            // Background context, not data — kept deliberately faint so it
+            // never competes with the layers on top of it. A network trace
+            // (see networkTrace.ts's createTraceHighlight) brightens just
+            // the plant's home subregion, showing exactly where the trace
+            // stopped rather than an arbitrary mileage figure.
+            filled: true,
+            stroked: true,
+            lineWidthUnits: 'pixels',
+            getFillColor: (f: any) => {
+              const props = f.properties as NercSubregionProperties;
+              const match = isMatch(f);
+              const base = highlightActive ? (match ? 45 : 6) : 18;
+              return [...hexToRgb(nercRegionColorHex(props.nerc_region)), base];
+            },
+            getLineColor: (f: any) => {
+              const props = f.properties as NercSubregionProperties;
+              const match = isMatch(f);
+              const baseColor = match && colorOverrideRgb ? colorOverrideRgb : hexToRgb(nercRegionColorHex(props.nerc_region));
+              return [...baseColor, highlightAlpha(140, match, highlightActive)];
+            },
+            getLineWidth: (f: any) => (highlightActive && isMatch(f) ? 3 : 1),
+            updateTriggers: {
+              getFillColor: [highlightVersion],
+              getLineColor: [highlightVersion],
+              getLineWidth: [highlightVersion],
+            },
             onHover,
           });
 
@@ -168,13 +209,13 @@ export function createDeckGLLayers(
             pointRadiusMaxPixels: 40,
             getFillColor: (f: any) => {
               const props = f.properties as IndustrialConvergenceProperties;
-              const alpha = ownerAlpha(220, isMatch(f), searchActive);
+              const alpha = highlightAlpha(220, isMatch(f), highlightActive);
               return props.energy_bottleneck_flag ? [...BOTTLENECK_COLOR, alpha] : [...rgb, alpha];
             },
-            getLineColor: (f: any) => [255, 255, 255, ownerAlpha(255, isMatch(f), searchActive)],
+            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(255, isMatch(f), highlightActive)],
             getLineWidth: 2,
             lineWidthMinPixels: 1,
-            updateTriggers: { getFillColor: [ownerQuery], getLineColor: [ownerQuery] },
+            updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
             onHover,
           });
 

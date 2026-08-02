@@ -7,6 +7,7 @@ from config import settings
 from ingest_auto_plants import build_auto_plants_table
 from ingest_industrial_convergence import build_industrial_convergence_table
 from ingest_power_grid import build_power_grid_tables
+from trace import GridGraph, find_anchor_node, load_grid_graph, trace_from_node
 
 logger = logging.getLogger("uvicorn")
 
@@ -27,6 +28,8 @@ class SpatialDatabase:
         self._seed_auto_plants()
         self._seed_power_grid()
         self._seed_industrial_convergence()
+        line_length_miles = dict(self.conn.execute("SELECT id, length_miles FROM power_grid").fetchall())
+        self.trace_graph: GridGraph = load_grid_graph(POWER_GRID_SQLITE_DB, line_length_miles)
 
     def _seed_auto_plants(self):
         # Layer: real U.S. automobile assembly/component facilities
@@ -43,8 +46,8 @@ class SpatialDatabase:
         counts = build_power_grid_tables(self.conn, POWER_GRID_SQLITE_DB)
         logger.info(
             f"Loaded {counts['power_grid']} transmission lines, "
-            f"{counts['power_plants']} power plants, and {counts['substations']} "
-            f"substations from {POWER_GRID_SQLITE_DB}"
+            f"{counts['power_plants']} power plants, {counts['substations']} "
+            f"substations, and {counts['nerc_subregions']} NERC subregions from {POWER_GRID_SQLITE_DB}"
         )
 
     def _seed_industrial_convergence(self):
@@ -129,6 +132,22 @@ class SpatialDatabase:
         '''
         result = self.conn.execute(query, params).fetchone()
         return result[0] if result and result[0] else '{"type": "FeatureCollection", "features": []}'
+
+    def trace_power_plant(self, plant_id: int, max_miles: float, allow_cross_subregion: bool = False) -> dict:
+        if not self.trace_graph.available:
+            return {"status": "unavailable", "detail": "Grid topology not built — run power/build_grid_topology.py."}
+
+        row = self.conn.execute(
+            "SELECT ST_X(geom) AS lon, ST_Y(geom) AS lat FROM power_plants WHERE id = ?", [plant_id]
+        ).fetchone()
+        if row is None:
+            return {"status": "not_found"}
+
+        anchor = find_anchor_node(self.trace_graph, plant_lon=row[0], plant_lat=row[1])
+        if anchor is None:
+            return {"status": "not_connected"}
+
+        return trace_from_node(self.trace_graph, anchor, max_miles=max_miles, allow_cross_subregion=allow_cross_subregion)
 
     def get_corridor_summary(self) -> list[dict]:
         rows = self.conn.execute(

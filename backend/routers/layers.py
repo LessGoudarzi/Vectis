@@ -4,7 +4,7 @@ from typing import Optional
 
 router = APIRouter(prefix="/api/v1/layers", tags=["Spatial Layers"])
 
-VALID_LAYERS = ["auto_plants", "power_grid", "power_plants", "substations", "industrial_convergence"]
+VALID_LAYERS = ["auto_plants", "power_grid", "power_plants", "substations", "nerc_subregions", "industrial_convergence"]
 
 
 @router.get("/{layer_id}")

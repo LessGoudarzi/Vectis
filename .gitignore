@@ -27,6 +27,9 @@ power/Electric_Power_Transmission_Lines.geojson
 /electric_substation_hifld_v4.zip
 /electric_substation_hifld_v4/
 power/electric_substation_hifld_v4/
+/jurisdiction_nerc_subregion_v1.zip
+/jurisdiction_nerc_subregion_v1/
+power/jurisdiction_nerc_subregion_v1/
 
 # Large JSON exports generated from source packages
 power/**/*.gpkg.json

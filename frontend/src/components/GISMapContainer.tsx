@@ -1,12 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import DeckGL from '@deck.gl/react';
 import { Map } from 'react-map-gl';
 import { useLayerState } from '../hooks/useLayerState';
 import { useGISData } from '../hooks/useGISData';
+import { useNetworkTrace } from '../hooks/useNetworkTrace';
 import { createDeckGLLayers } from '../layers/layerFactory';
+import { createOwnerHighlight } from '../owners';
+import { createTraceHighlight } from '../networkTrace';
+import { ActiveHighlight } from '../types/gis';
 import { LayerManager } from './LayerManager';
 import { FeatureTooltip } from './FeatureTooltip';
 import { OwnerSearch } from './OwnerSearch';
+import { TracePanel } from './TracePanel';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const INITIAL_VIEW_STATE = {
@@ -51,19 +56,57 @@ export const GISMapContainer: React.FC = () => {
   const { layers, toggleVisibility, updateOpacity, toggleLegend, categoryFilters, toggleCategory, setAllCategories } =
     useLayerState();
   const { datasets } = useGISData();
+  const trace = useNetworkTrace();
   const [hoverInfo, setHoverInfo] = useState<any>(null);
   const [pinnedInfo, setPinnedInfo] = useState<any>(null);
   const [ownerQuery, setOwnerQuery] = useState('');
 
-  const deckLayers = useMemo(
-    () => createDeckGLLayers(layers, datasets, categoryFilters, ownerQuery, setHoverInfo),
-    [layers, datasets, categoryFilters, ownerQuery]
+  // Owner search and network trace are mutually exclusive investigative
+  // modes — starting one clears the other, so layerFactory only ever has
+  // to reason about a single ActiveHighlight at a time.
+  const handleOwnerQueryChange = useCallback(
+    (query: string) => {
+      if (query && trace.active) trace.clearTrace();
+      setOwnerQuery(query);
+    },
+    [trace]
   );
 
-  const handleFilterOwner = (owner: string) => {
-    setOwnerQuery(owner);
-    setPinnedInfo(null);
-  };
+  const handleTracePlant = useCallback(
+    (plantId: number, plantName: string) => {
+      setOwnerQuery('');
+      setPinnedInfo(null);
+      trace.startTrace(plantId, plantName);
+    },
+    [trace]
+  );
+
+  const handleFilterOwner = useCallback(
+    (owner: string) => {
+      if (trace.active) trace.clearTrace();
+      setOwnerQuery(owner);
+      setPinnedInfo(null);
+    },
+    [trace]
+  );
+
+  const { highlight, highlightVersion }: { highlight: ActiveHighlight | null; highlightVersion: string | number } =
+    useMemo(() => {
+      if (trace.active) {
+        const homeSubregion = trace.result?.status === 'ok' ? trace.result.home_subregion : null;
+        return {
+          highlight: createTraceHighlight(trace.plantId!, trace.revealedLineIds, homeSubregion),
+          highlightVersion: trace.revealedMiles,
+        };
+      }
+      const ownerHighlight = createOwnerHighlight(ownerQuery);
+      return { highlight: ownerHighlight, highlightVersion: ownerQuery };
+    }, [trace.active, trace.plantId, trace.revealedLineIds, trace.revealedMiles, trace.result, ownerQuery]);
+
+  const deckLayers = useMemo(
+    () => createDeckGLLayers(layers, datasets, categoryFilters, highlight, highlightVersion, setHoverInfo),
+    [layers, datasets, categoryFilters, highlight, highlightVersion]
+  );
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-slate-950">
@@ -77,7 +120,22 @@ export const GISMapContainer: React.FC = () => {
         onSetAllCategories={setAllCategories}
       />
 
-      <OwnerSearch layers={layers} datasets={datasets} query={ownerQuery} onQueryChange={setOwnerQuery} />
+      {trace.active ? (
+        <TracePanel
+          plantName={trace.plantName}
+          loading={trace.loading}
+          result={trace.result}
+          revealedMiles={trace.revealedMiles}
+          maxDistance={trace.maxDistance}
+          maxMiles={trace.maxMiles}
+          playing={trace.playing}
+          onTogglePlay={trace.togglePlay}
+          onTraceFurther={trace.traceFurther}
+          onClear={trace.clearTrace}
+        />
+      ) : (
+        <OwnerSearch layers={layers} datasets={datasets} query={ownerQuery} onQueryChange={handleOwnerQueryChange} />
+      )}
 
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
@@ -112,6 +170,7 @@ export const GISMapContainer: React.FC = () => {
           properties={pinnedInfo.object.properties}
           pinned
           onFilterOwner={handleFilterOwner}
+          onTracePlant={handleTracePlant}
           onClose={() => setPinnedInfo(null)}
         />
       )}

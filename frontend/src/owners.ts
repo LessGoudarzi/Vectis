@@ -1,4 +1,4 @@
-import { LayerId } from './types/gis';
+import { ActiveHighlight, LayerId } from './types/gis';
 
 // Where "owner" lives per layer — differs by field name and shape
 // (scalar string vs. a list, for substations' inferred nearby_line_owners).
@@ -45,6 +45,11 @@ export function collectDistinctOwners(datasets: Record<string, any>): string[] {
     }
   });
   return Array.from(seen).sort((a, b) => a.localeCompare(b));
+}
+
+export function createOwnerHighlight(query: string): ActiveHighlight | null {
+  if (!query.trim()) return null;
+  return { isMatch: (layerId, properties) => featureMatchesOwnerQuery(layerId, properties, query) };
 }
 
 export function countMatchesByLayer(

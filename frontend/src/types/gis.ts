@@ -1,4 +1,4 @@
-export type LayerId = 'auto-plants' | 'power-grid' | 'power-plants' | 'substations' | 'industrial-convergence';
+export type LayerId = 'auto-plants' | 'power-grid' | 'power-plants' | 'substations' | 'nerc-subregions' | 'industrial-convergence';
 
 export interface LayerConfig {
   id: LayerId;
@@ -13,6 +13,18 @@ export interface LayerConfig {
 export interface LegendEntry {
   label: string;
   colorHex: string;
+}
+
+// Shared by owner search and network tracing: exactly one "investigative
+// mode" is active on the map at a time (see owners.ts's
+// createOwnerHighlight, networkTrace.ts's createTraceHighlight).
+// Matching features get boosted alpha (and optionally a color override,
+// e.g. traced lines rendering in a distinct "energized" color instead of
+// their normal voltage-bucket color); everything else dims — see
+// layerFactory.ts's highlightAlpha.
+export interface ActiveHighlight {
+  isMatch: (layerId: LayerId, properties: any) => boolean;
+  colorOverrideHex?: Partial<Record<LayerId, string>>;
 }
 
 // Mirrors backend/ingest_auto_plants.py's auto_plants table columns
@@ -64,6 +76,14 @@ export interface SubstationProperties {
   // _link_substations_to_nearby_line_owners) — not an authoritative
   // ownership record, and can be null/empty if nothing resolved nearby.
   nearby_line_owners: string[] | null;
+}
+
+// Mirrors backend/ingest_power_grid.py's nerc_subregions table columns —
+// the boundary a network trace stops at by default (see trace.py)
+export interface NercSubregionProperties {
+  id: number;
+  nerc_region: string;
+  subregion_name: string;
 }
 
 // Mirrors backend/ingest_industrial_convergence.py's flattened

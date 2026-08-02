@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, Zap } from 'lucide-react';
 import { LayerId } from '../types/gis';
 import { getFeatureOwners } from '../owners';
 
@@ -11,9 +11,11 @@ interface FeatureTooltipProps {
   // Hover tooltips (pinned=false) are transient and can't hold clickable
   // actions — the cursor leaving the feature to reach a button would hide
   // them first. Click promotes a feature to "pinned": it stays open and
-  // pointer-events-auto, so the owner-filter buttons are actually usable.
+  // pointer-events-auto, so the owner-filter and trace buttons are
+  // actually usable.
   pinned?: boolean;
   onFilterOwner?: (owner: string) => void;
+  onTracePlant?: (plantId: number, plantName: string) => void;
   onClose?: () => void;
 }
 
@@ -53,10 +55,12 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
   properties,
   pinned = false,
   onFilterOwner,
+  onTracePlant,
   onClose,
 }) => {
   const entries = Object.entries(properties ?? {}).filter(([key]) => !HIDDEN_KEYS.has(key));
   const owners = pinned ? getFeatureOwners(layerId as LayerId, properties) : [];
+  const canTrace = pinned && layerId === 'power-plants' && onTracePlant && properties?.id != null;
 
   return (
     <div
@@ -85,6 +89,18 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
           </React.Fragment>
         ))}
       </dl>
+
+      {canTrace && (
+        <div className="mt-2.5 border-t border-slate-700/40 pt-2">
+          <button
+            onClick={() => onTracePlant!(properties.id, properties.plant_name ?? 'Unnamed Plant')}
+            className="flex w-full items-center justify-center gap-1.5 rounded bg-cyan-500/15 px-2 py-1.5 text-[11px] font-medium text-cyan-300 hover:bg-cyan-500/25"
+          >
+            <Zap className="h-3 w-3" />
+            Trace Network
+          </button>
+        </div>
+      )}
 
       {owners.length > 0 && onFilterOwner && (
         <div className="mt-2.5 space-y-1 border-t border-slate-700/40 pt-2">

@@ -82,11 +82,18 @@ export function createDeckGLLayers(
             // Colored by voltage bucket (see legends.ts / the Legend toggle
             // in the layer panel) unless a network trace overrides matching
             // lines to an "energized" highlight color instead.
+            //
+            // Deliberately ignores isExempt (unlike the other data layers
+            // below): the trace's whole point is lines lighting up as the
+            // reveal wave moves outward, which only reads as an animation
+            // if not-yet-revealed lines are dim — showing every in-subregion
+            // line at near-full brightness from frame one (as isExempt
+            // would) flattens that contrast to nothing.
             getLineColor: (f: any) => {
               const props = f.properties as TransmissionLineProperties;
               const match = isMatch(f);
               const baseColor = match && colorOverrideRgb ? colorOverrideRgb : hexToRgb(voltageBucketColorHex(props.voltage));
-              return [...baseColor, highlightAlpha(220, match, isExempt(f), highlightActive)];
+              return [...baseColor, highlightAlpha(220, match, false, highlightActive)];
             },
             getLineWidth: (f: any) => {
               const props = f.properties as TransmissionLineProperties;

@@ -1,0 +1,11 @@
+{
+  "source_file": "auto_facilities_north_america_master.jsonl",
+  "record_count": 4730,
+  "tier1_count": 4336,
+  "tier2_count": 0,
+  "unclassified_count": 394,
+  "facility_types_in_unclassified": {
+    "Assembly Plant": 394
+  },
+  "notes": "No explicit tier field was found in the current dataset, so the split is currently empty for Tier 1/Tier 2 and all supplier-style records fall into the unclassified bucket."
+}

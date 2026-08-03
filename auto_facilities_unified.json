@@ -1,0 +1,3378 @@
+[
+  {
+    "canonical_summary": {
+      "facility_name": "TESLA, INC.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 955,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1000 COMMONWEALTH AVE",
+        "update_date": null,
+        "std_full_address": "1000 COMMONWEALTH AVE, NEWTON CENTER, MA  02459 US",
+        "user_id": "REFRESH",
+        "std_city_name": "NEWTON CENTER",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "COMMONWEALTH",
+        "std_stype_after": "AVE",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "NEWTON CITY OF",
+        "create_date": null,
+        "city_name": "NEWTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110010599637",
+        "primary_name": "NEWTON CITY OF",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": "N",
+        "std_street_name": "COMMONWEALTH AVE",
+        "interest_status_code": null,
+        "review_reason": "NAME MISMATCH -NPDES - MAR10051I",
+        "postal_code": "024591400",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1000",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": "Y",
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02459",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "1000 COMMONWEALTH AVE",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Tesla",
+        "Mfr_ID": 955,
+        "Mfr_Name": "TESLA, INC.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Truck"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "ASTON MARTIN LAGONDA LIMITED",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 956,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1000 GREAT PLAIN AVE",
+        "update_date": null,
+        "std_full_address": "1000 GREAT PLAIN AVE, NEEDHAM, MA  02492 US",
+        "user_id": "GDH",
+        "std_city_name": "NEEDHAM",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "GREAT PLAIN",
+        "std_stype_after": "AVE",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "WILDALE",
+        "create_date": null,
+        "city_name": "NEEDHAM",
+        "federal_facility_code": null,
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011571593",
+        "primary_name": "WILDALE CORPORATION",
+        "std_state_code": "MA",
+        "county_name": "NORFOLK",
+        "small_bus_ind": null,
+        "std_street_name": "GREAT PLAIN AVE",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "024922560",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25021",
+        "fips_code": "25021",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1000",
+        "location_description": null,
+        "std_county_name": "NORFOLK COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02492",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "1000 GREAT PLAIN AVE",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED KINGDOM (UK)",
+        "Mfr_CommonName": "Aston Martin",
+        "Mfr_ID": 956,
+        "Mfr_Name": "ASTON MARTIN LAGONDA LIMITED",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW OF NORTH AMERICA, LLC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 957,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1000 MAIN STREET",
+        "update_date": null,
+        "std_full_address": "1000 MAIN ST, HANSON, MA  02341 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "HANSON",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "MAIN",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "IMPERIA CORPRT",
+        "create_date": null,
+        "city_name": "HANSON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007256021",
+        "primary_name": "IMPERIA CORP",
+        "std_state_code": "MA",
+        "county_name": "PLYMOUTH",
+        "small_bus_ind": null,
+        "std_street_name": "MAIN ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02341-1560",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25023",
+        "fips_code": "25023",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1000",
+        "location_description": null,
+        "std_county_name": "PLYMOUTH COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02341",
+        "last_reported_date": null,
+        "legislative_dist_num": "S ",
+        "std_loc_address": "1000 MAIN ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 957,
+        "Mfr_Name": "BMW OF NORTH AMERICA, LLC",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "JAGUAR LAND ROVER NA, LLC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 958,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1008 MASS. AVENUE",
+        "update_date": null,
+        "std_full_address": "1008 MASSACHUSETTS AVE, CAMBRIDGE, MA  02138 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "CAMBRIDGE",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "MASSACHUSETTS",
+        "std_stype_after": "AVE",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "1008 MASS AVE RLTY TRST",
+        "create_date": null,
+        "city_name": "CAMBRIDGE",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110009022618",
+        "primary_name": "1008 MASS. AVE. REALTY TRUST",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "MASSACHUSETTS AVE",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02138-5358",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1008",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02138",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "1008 MASSACHUSETTS AVE",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Jaguar Land Rover",
+        "Mfr_ID": 958,
+        "Mfr_Name": "JAGUAR LAND ROVER NA, LLC",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Truck"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MASERATI NORTH AMERICA, INC.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 959,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 BREEDS HILL ROAD",
+        "update_date": null,
+        "std_full_address": "100 BREEDS HILL RD, HYANNIS, MA  02601 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "HYANNIS",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "BREEDS HILL",
+        "std_stype_after": "RD",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "CAPE COD POTATO CHIPS",
+        "create_date": null,
+        "city_name": "HYANNIS",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007094401",
+        "primary_name": "CAPE COD POTATO CHIPS",
+        "std_state_code": "MA",
+        "county_name": "BARNSTABLE",
+        "small_bus_ind": null,
+        "std_street_name": "BREEDS HILL RD",
+        "interest_status_code": null,
+        "review_reason": "NAME MISMATCH -EIS - 5103511",
+        "postal_code": "02601-1886",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25001",
+        "fips_code": "25001",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "BARNSTABLE COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": "Y",
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02601",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 BREEDS HILL RD",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Mesarati",
+        "Mfr_ID": 959,
+        "Mfr_Name": "MASERATI NORTH AMERICA, INC.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": true,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "ROLLS ROYCE MOTOR CARS",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 960,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 DERBY ST",
+        "update_date": null,
+        "std_full_address": "100 DERBY ST, HINGHAM, MA  02043 US",
+        "user_id": "BATCH",
+        "std_city_name": "HINGHAM",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "DERBY",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "WALGREENS DRUG STR 17709",
+        "create_date": null,
+        "city_name": "HINGHAM",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110012552674",
+        "primary_name": "WALGREENS DRUG STORE 17709",
+        "std_state_code": "MA",
+        "county_name": "PLYMOUTH",
+        "small_bus_ind": null,
+        "std_street_name": "DERBY ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02043",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25023",
+        "fips_code": "25023",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "PLYMOUTH COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02043",
+        "last_reported_date": null,
+        "legislative_dist_num": "N ",
+        "std_loc_address": "100 DERBY ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Rolls Royce",
+        "Mfr_ID": 960,
+        "Mfr_Name": "ROLLS ROYCE MOTOR CARS",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BUELL MOTORCYCLE CO.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 961,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 LANCASTER STREET",
+        "update_date": null,
+        "std_full_address": "100 LANCASTER ST, WORCESTER, MA  01609 US",
+        "user_id": "GDH",
+        "std_city_name": "WORCESTER",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "LANCASTER",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "YTH OPPORTUNITIES SCH",
+        "create_date": null,
+        "city_name": "WORCESTER",
+        "federal_facility_code": null,
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011510294",
+        "primary_name": "YOUTH OPPORTUNITIES SCHOOL",
+        "std_state_code": "MA",
+        "county_name": "WORCESTER",
+        "small_bus_ind": null,
+        "std_street_name": "LANCASTER ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01609",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25027",
+        "fips_code": "25027",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "WORCESTER COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01609",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 LANCASTER ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Buell",
+        "Mfr_ID": 961,
+        "Mfr_Name": "BUELL MOTORCYCLE CO.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Motorcycle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "TOYOTA MOTOR NORTH AMERICA, INC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 962,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 SAM FONZO DR",
+        "update_date": null,
+        "std_full_address": "100 SAM FONZO DR, BEVERLY, MA  01915 US",
+        "user_id": "REFRESH",
+        "std_city_name": "BEVERLY",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "SAM FONZO",
+        "std_stype_after": "DR",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "AERO MFG CORPRT",
+        "create_date": null,
+        "city_name": "BEVERLY",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110012573198",
+        "primary_name": "AERO MANUFACTURING CORP",
+        "std_state_code": "MA",
+        "county_name": "ESSEX",
+        "small_bus_ind": "Y",
+        "std_street_name": "SAM FONZO DR",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01915",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25009",
+        "fips_code": "25009",
+        "stand_alone_flag": "N",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "ESSEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01915",
+        "last_reported_date": null,
+        "legislative_dist_num": "N ",
+        "std_loc_address": "100 SAM FONZO DR",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Toyota",
+        "Mfr_ID": 962,
+        "Mfr_Name": "TOYOTA MOTOR NORTH AMERICA, INC",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MERCEDES-BENZ USA, LLC (SPRINTER)",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 964,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 WALNUT STREET",
+        "update_date": null,
+        "std_full_address": "100 WALNUT ST, NEWTONVILLE, MA  02460 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "NEWTONVILLE",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WALNUT",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "NEWTON SCH DEPT",
+        "create_date": null,
+        "city_name": "NEWTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007297200",
+        "primary_name": "NEWTON SCHOOL DEPT",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "WALNUT ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02460-1398",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "N",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02460",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 WALNUT ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Mercedes-Benz Sprinter",
+        "Mfr_ID": 964,
+        "Mfr_Name": "MERCEDES-BENZ USA, LLC (SPRINTER)",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "FULMER FABRICATIONS",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 965,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 WESTMONT",
+        "update_date": null,
+        "std_full_address": "100 WESTMONT ST, WEST HARTFORD, CT  06117 US",
+        "user_id": "REFRESH",
+        "std_city_name": "WEST HARTFORD",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WESTMONT",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "POLK POND",
+        "create_date": null,
+        "city_name": "WEST HARTFORD",
+        "federal_facility_code": null,
+        "tribal_land_code": null,
+        "site_type_name": "STATIONARY",
+        "registry_id": "110044129314",
+        "primary_name": "POLK POND",
+        "std_state_code": "CT",
+        "county_name": "HARTFORD",
+        "small_bus_ind": null,
+        "std_street_name": "WESTMONT ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "-",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "09003",
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "HARTFORD COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": null,
+        "data_quality_code": "mS",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "06117",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 WESTMONT ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": null,
+        "Mfr_ID": 965,
+        "Mfr_Name": "FULMER FABRICATIONS",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Motorcycle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW AG",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 966,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 WILLIAM STREET",
+        "update_date": null,
+        "std_full_address": "100 WILLIAM ST, WELLESLEY HILLS, MA  02481 US",
+        "user_id": "DSMITH04",
+        "std_city_name": "WELLESLEY HILLS",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WILLIAM",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "WELLESLEY HLDNG 2ND",
+        "create_date": null,
+        "city_name": "WELLESLEY",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007370077",
+        "primary_name": "WELLESLEY HOLDING II",
+        "std_state_code": "MA",
+        "county_name": "NORFOLK",
+        "small_bus_ind": null,
+        "std_street_name": "WILLIAM ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02481-3701",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25021",
+        "fips_code": "25021",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "NORFOLK COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02481",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 WILLIAM ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "GERMANY",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 966,
+        "Mfr_Name": "BMW AG",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW M GMBH",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 967,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 BEACON STREET",
+        "update_date": null,
+        "std_full_address": "101 BEACON ST, LAWRENCE, MA  01843 US",
+        "user_id": "DSMITH04",
+        "std_city_name": "LAWRENCE",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "BEACON",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "ESSEM PCKG",
+        "create_date": null,
+        "city_name": "LAWRENCE",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007257066",
+        "primary_name": "ESSEM PACKING COMPANY",
+        "std_state_code": "MA",
+        "county_name": "ESSEX",
+        "small_bus_ind": null,
+        "std_street_name": "BEACON ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01843",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25009",
+        "fips_code": "25009",
+        "stand_alone_flag": "N",
+        "std_house_number": "101",
+        "location_description": null,
+        "std_county_name": "ESSEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01843",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "101 BEACON ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "GERMANY",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 967,
+        "Mfr_Name": "BMW M GMBH",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW MANUFACTURER CORPORATION / BMW NORTH AMERICA",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 968,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 CENTRAL ST",
+        "update_date": null,
+        "std_full_address": "101 CENTRAL ST, HOLLISTON, MA  01746 US",
+        "user_id": "REFRESH",
+        "std_city_name": "HOLLISTON",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "CENTRAL",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "CVS PHARM 1860",
+        "create_date": null,
+        "city_name": "HOLLISTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110012573401",
+        "primary_name": "CVS PHARMACY 1860",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "CENTRAL ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01746",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "Y",
+        "std_house_number": "101",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01746",
+        "last_reported_date": null,
+        "legislative_dist_num": "C ",
+        "std_loc_address": "101 CENTRAL ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 968,
+        "Mfr_Name": "BMW MANUFACTURER CORPORATION / BMW NORTH AMERICA",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MOTORCYCLE MACHINE SHOP SERVICES, LLC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 969,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 N IDAHO AVE",
+        "update_date": null,
+        "std_full_address": null,
+        "user_id": "REFRESH",
+        "std_city_name": null,
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": null,
+        "std_stype_after": null,
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "POLES",
+        "create_date": null,
+        "city_name": null,
+        "federal_facility_code": null,
+        "tribal_land_code": null,
+        "site_type_name": "STATIONARY",
+        "registry_id": "110046364046",
+        "primary_name": "POLES INC",
+        "std_state_code": null,
+        "county_name": null,
+        "small_bus_ind": null,
+        "std_street_name": null,
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": null,
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": null,
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": null,
+        "location_description": null,
+        "std_county_name": null,
+        "std_prefix": null,
+        "std_country": null,
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": null,
+        "data_quality_code": "mSmOmCmZ",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": null,
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": null,
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Motorcycle Machine Shop Services",
+        "Mfr_ID": 969,
+        "Mfr_Name": "MOTORCYCLE MACHINE SHOP SERVICES, LLC",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BUGATTI AUTOMOBILES S.A.S.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 970,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 WALNUT STREET",
+        "update_date": null,
+        "std_full_address": "101 WALNUT ST, WATERTOWN, MA  02472 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "WATERTOWN",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WALNUT",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "APAHOUSER",
+        "create_date": null,
+        "city_name": "WATERTOWN",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007256753",
+        "primary_name": "APAHOUSER INC",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "WALNUT ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02472-4026",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "N",
+        "std_house_number": "101",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02472",
+        "last_reported_date": null,
+        "legislative_dist_num": "N ",
+        "std_loc_address": "101 WALNUT ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "FRANCE",
+        "Mfr_CommonName": "Bugatti",
+        "Mfr_ID": 970,
+        "Mfr_Name": "BUGATTI AUTOMOBILES S.A.S.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "HOMBILT TRAILERS INC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 971,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1022 ELM STREET",
+        "update_date": null,
+        "std_full_address": null,
+        "user_id": "REFRESH",
+        "std_city_name": null,
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": null,
+        "std_stype_after": null,
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "HARTFORD BALL AND HARTFORD BRNG",
+        "create_date": null,
+        "city_name": null,
+        "federal_facility_code": null,
+        "tribal_land_code": null,
+        "site_type_name": "STATIONARY",
+        "registry_id": "110044151235",
+        "primary_name": "HARTFORD BALL & HARTFORD BEARING CO",
+        "std_state_code": null,
+        "county_name": null,
+        "small_bus_ind": null,
+        "std_street_name": null,
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": null,
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": null,
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": null,
+        "location_description": null,
+        "std_county_name": null,
+        "std_prefix": null,
+        "std_country": null,
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": null,
+        "data_quality_code": "mSmOmCmZ",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": null,
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": null,
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Hombilt",
+        "Mfr_ID": 971,
+        "Mfr_Name": "HOMBILT TRAILERS INC",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Trailer"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW AG MOTORCYCLES",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 972,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "103 JOHNSON",
+        "update_date": null,
+        "std_full_address": "103 JOHNSON ST, LYNN, MA  01902 US",
+        "user_id": "GDH",
+        "std_city_name": "LYNN",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "JOHNSON",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "DEV SCH",
+        "create_date": null,
+        "city_name": "LYNN",
+        "federal_facility_code": null,
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011483581",
+        "primary_name": "DEVELOPMENTAL SCHOOL",
+        "std_state_code": "MA",
+        "county_name": "ESSEX",
+        "small_bus_ind": null,
+        "std_street_name": "JOHNSON ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01902-4001",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25009",
+        "fips_code": "25009",
+        "stand_alone_flag": "Y",
+        "std_house_number": "103",
+        "location_description": null,
+        "std_county_name": "ESSEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01902",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "103 JOHNSON ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "GERMANY",
+        "Mfr_CommonName": "BMW Motorrad (Motorcycles)",
+        "Mfr_ID": 972,
+        "Mfr_Name": "BMW AG MOTORCYCLES",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "AMERICAN CUSTOM GOLF CARS, INC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 973,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "104 26 LORNE ST",
+        "update_date": null,
+        "std_full_address": null,
+        "user_id": "REFRESH",
+        "std_city_name": null,
+        "country_name": "CANADA",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": null,
+        "std_stype_after": null,
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "SUSSEX ENVIR SVC",
+        "create_date": null,
+        "city_name": "NEW WESTMINSTER",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110017774639",
+        "primary_name": "SUSSEX ENVIRONMENTAL SVC INC",
+        "std_state_code": null,
+        "county_name": null,
+        "small_bus_ind": null,
+        "std_street_name": null,
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "V3M 6G3",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": null,
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": null,
+        "location_description": null,
+        "std_county_name": null,
+        "std_prefix": null,
+        "std_country": null,
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": "BC",
+        "data_quality_code": "iSmOiCiZ",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": null,
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": null,
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "ACG",
+        "Mfr_ID": 973,
+        "Mfr_Name": "AMERICAN CUSTOM GOLF CARS, INC",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Low Speed Vehicle (LSV)"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Off-Road Vehicle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MOONLIGHT AUTO",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 974,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1043 PEARL ST",
+        "update_date": null,
+        "std_full_address": "1043 PEARL ST, BROCKTON, MA  02301 US",
+        "user_id": "REFRESH",
+        "std_city_name": "BROCKTON",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "PEARL",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "VERIZON NEW ENGLD",
+        "create_date": null,
+        "city_name": "BROCKTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110024292077",
+        "primary_name": "VERIZON NEW ENGLAND",
+        "std_state_code": "MA",
+        "county_name": "PLYMOUTH",
+        "small_bus_ind": null,
+        "std_street_name": "PEARL ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02301-5406",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25023",
+        "fips_code": "25023",
+        "stand_alone_flag": "N",
+        "std_house_number": "1043",
+        "location_description": null,
+        "std_county_name": "PLYMOUTH COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02301",
+        "last_reported_date": null,
+        "legislative_dist_num": "S ",
+        "std_loc_address": "1043 PEARL ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": null,
+        "Mfr_ID": 974,
+        "Mfr_Name": "MOONLIGHT AUTO",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Motorcycle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "COOPER CYCLES",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 975,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "104 ADAMS ST",
+        "update_date": null,
+        "std_full_address": "104 ADAMS ST, MEDFIELD, MA  02052 US",
+        "user_id": "REFRESH",
+        "std_city_name": "MEDFIELD",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "ADAMS",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "GILTRON",
+        "create_date": null,
+        "city_name": "MEDFIELD",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011137670",
+        "primary_name": "GILTRON INC",
+        "std_state_code": "MA",
+        "county_name": "NORFOLK",
+        "small_bus_ind": null,
+        "std_street_name": "ADAMS ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02052",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25021",
+        "fips_code": "25021",
+        "stand_alone_flag": "N",
+        "std_house_number": "104",
+        "location_description": null,
+        "std_county_name": "NORFOLK COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02052",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "104 ADAMS ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Cooper Cycles",
+        "Mfr_ID": 975,
+        "Mfr_Name": "COOPER CYCLES",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "TESLA, INC.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 955,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1000 COMMONWEALTH AVE",
+        "update_date": null,
+        "std_full_address": "1000 COMMONWEALTH AVE, NEWTON CENTER, MA  02459 US",
+        "user_id": "REFRESH",
+        "std_city_name": "NEWTON CENTER",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "COMMONWEALTH",
+        "std_stype_after": "AVE",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "NEWTON CITY OF",
+        "create_date": null,
+        "city_name": "NEWTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110010599637",
+        "primary_name": "NEWTON CITY OF",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": "N",
+        "std_street_name": "COMMONWEALTH AVE",
+        "interest_status_code": null,
+        "review_reason": "NAME MISMATCH -NPDES - MAR10051I",
+        "postal_code": "024591400",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1000",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": "Y",
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02459",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "1000 COMMONWEALTH AVE",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Tesla",
+        "Mfr_ID": 955,
+        "Mfr_Name": "TESLA, INC.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Truck"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "ASTON MARTIN LAGONDA LIMITED",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 956,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1000 GREAT PLAIN AVE",
+        "update_date": null,
+        "std_full_address": "1000 GREAT PLAIN AVE, NEEDHAM, MA  02492 US",
+        "user_id": "GDH",
+        "std_city_name": "NEEDHAM",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "GREAT PLAIN",
+        "std_stype_after": "AVE",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "WILDALE",
+        "create_date": null,
+        "city_name": "NEEDHAM",
+        "federal_facility_code": null,
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011571593",
+        "primary_name": "WILDALE CORPORATION",
+        "std_state_code": "MA",
+        "county_name": "NORFOLK",
+        "small_bus_ind": null,
+        "std_street_name": "GREAT PLAIN AVE",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "024922560",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25021",
+        "fips_code": "25021",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1000",
+        "location_description": null,
+        "std_county_name": "NORFOLK COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02492",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "1000 GREAT PLAIN AVE",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED KINGDOM (UK)",
+        "Mfr_CommonName": "Aston Martin",
+        "Mfr_ID": 956,
+        "Mfr_Name": "ASTON MARTIN LAGONDA LIMITED",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW OF NORTH AMERICA, LLC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 957,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1000 MAIN STREET",
+        "update_date": null,
+        "std_full_address": "1000 MAIN ST, HANSON, MA  02341 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "HANSON",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "MAIN",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "IMPERIA CORPRT",
+        "create_date": null,
+        "city_name": "HANSON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007256021",
+        "primary_name": "IMPERIA CORP",
+        "std_state_code": "MA",
+        "county_name": "PLYMOUTH",
+        "small_bus_ind": null,
+        "std_street_name": "MAIN ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02341-1560",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25023",
+        "fips_code": "25023",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1000",
+        "location_description": null,
+        "std_county_name": "PLYMOUTH COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02341",
+        "last_reported_date": null,
+        "legislative_dist_num": "S ",
+        "std_loc_address": "1000 MAIN ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 957,
+        "Mfr_Name": "BMW OF NORTH AMERICA, LLC",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "JAGUAR LAND ROVER NA, LLC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 958,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1008 MASS. AVENUE",
+        "update_date": null,
+        "std_full_address": "1008 MASSACHUSETTS AVE, CAMBRIDGE, MA  02138 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "CAMBRIDGE",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "MASSACHUSETTS",
+        "std_stype_after": "AVE",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "1008 MASS AVE RLTY TRST",
+        "create_date": null,
+        "city_name": "CAMBRIDGE",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110009022618",
+        "primary_name": "1008 MASS. AVE. REALTY TRUST",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "MASSACHUSETTS AVE",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02138-5358",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "Y",
+        "std_house_number": "1008",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02138",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "1008 MASSACHUSETTS AVE",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Jaguar Land Rover",
+        "Mfr_ID": 958,
+        "Mfr_Name": "JAGUAR LAND ROVER NA, LLC",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Truck"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MASERATI NORTH AMERICA, INC.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 959,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 BREEDS HILL ROAD",
+        "update_date": null,
+        "std_full_address": "100 BREEDS HILL RD, HYANNIS, MA  02601 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "HYANNIS",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "BREEDS HILL",
+        "std_stype_after": "RD",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "CAPE COD POTATO CHIPS",
+        "create_date": null,
+        "city_name": "HYANNIS",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007094401",
+        "primary_name": "CAPE COD POTATO CHIPS",
+        "std_state_code": "MA",
+        "county_name": "BARNSTABLE",
+        "small_bus_ind": null,
+        "std_street_name": "BREEDS HILL RD",
+        "interest_status_code": null,
+        "review_reason": "NAME MISMATCH -EIS - 5103511",
+        "postal_code": "02601-1886",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25001",
+        "fips_code": "25001",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "BARNSTABLE COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": "Y",
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02601",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 BREEDS HILL RD",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Mesarati",
+        "Mfr_ID": 959,
+        "Mfr_Name": "MASERATI NORTH AMERICA, INC.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Passenger Car"
+          },
+          {
+            "IsPrimary": true,
+            "Name": "Multipurpose Passenger Vehicle (MPV)"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "ROLLS ROYCE MOTOR CARS",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 960,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 DERBY ST",
+        "update_date": null,
+        "std_full_address": "100 DERBY ST, HINGHAM, MA  02043 US",
+        "user_id": "BATCH",
+        "std_city_name": "HINGHAM",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "DERBY",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "WALGREENS DRUG STR 17709",
+        "create_date": null,
+        "city_name": "HINGHAM",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110012552674",
+        "primary_name": "WALGREENS DRUG STORE 17709",
+        "std_state_code": "MA",
+        "county_name": "PLYMOUTH",
+        "small_bus_ind": null,
+        "std_street_name": "DERBY ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02043",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25023",
+        "fips_code": "25023",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "PLYMOUTH COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02043",
+        "last_reported_date": null,
+        "legislative_dist_num": "N ",
+        "std_loc_address": "100 DERBY ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Rolls Royce",
+        "Mfr_ID": 960,
+        "Mfr_Name": "ROLLS ROYCE MOTOR CARS",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BUELL MOTORCYCLE CO.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 961,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 LANCASTER STREET",
+        "update_date": null,
+        "std_full_address": "100 LANCASTER ST, WORCESTER, MA  01609 US",
+        "user_id": "GDH",
+        "std_city_name": "WORCESTER",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "LANCASTER",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "YTH OPPORTUNITIES SCH",
+        "create_date": null,
+        "city_name": "WORCESTER",
+        "federal_facility_code": null,
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011510294",
+        "primary_name": "YOUTH OPPORTUNITIES SCHOOL",
+        "std_state_code": "MA",
+        "county_name": "WORCESTER",
+        "small_bus_ind": null,
+        "std_street_name": "LANCASTER ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01609",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25027",
+        "fips_code": "25027",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "WORCESTER COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01609",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 LANCASTER ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Buell",
+        "Mfr_ID": 961,
+        "Mfr_Name": "BUELL MOTORCYCLE CO.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Motorcycle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "TOYOTA MOTOR NORTH AMERICA, INC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 962,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 SAM FONZO DR",
+        "update_date": null,
+        "std_full_address": "100 SAM FONZO DR, BEVERLY, MA  01915 US",
+        "user_id": "REFRESH",
+        "std_city_name": "BEVERLY",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "SAM FONZO",
+        "std_stype_after": "DR",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "AERO MFG CORPRT",
+        "create_date": null,
+        "city_name": "BEVERLY",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110012573198",
+        "primary_name": "AERO MANUFACTURING CORP",
+        "std_state_code": "MA",
+        "county_name": "ESSEX",
+        "small_bus_ind": "Y",
+        "std_street_name": "SAM FONZO DR",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01915",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25009",
+        "fips_code": "25009",
+        "stand_alone_flag": "N",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "ESSEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01915",
+        "last_reported_date": null,
+        "legislative_dist_num": "N ",
+        "std_loc_address": "100 SAM FONZO DR",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Toyota",
+        "Mfr_ID": 962,
+        "Mfr_Name": "TOYOTA MOTOR NORTH AMERICA, INC",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MERCEDES-BENZ USA, LLC (SPRINTER)",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 964,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 WALNUT STREET",
+        "update_date": null,
+        "std_full_address": "100 WALNUT ST, NEWTONVILLE, MA  02460 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "NEWTONVILLE",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WALNUT",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "NEWTON SCH DEPT",
+        "create_date": null,
+        "city_name": "NEWTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007297200",
+        "primary_name": "NEWTON SCHOOL DEPT",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "WALNUT ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02460-1398",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "N",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02460",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 WALNUT ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Mercedes-Benz Sprinter",
+        "Mfr_ID": 964,
+        "Mfr_Name": "MERCEDES-BENZ USA, LLC (SPRINTER)",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "FULMER FABRICATIONS",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 965,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 WESTMONT",
+        "update_date": null,
+        "std_full_address": "100 WESTMONT ST, WEST HARTFORD, CT  06117 US",
+        "user_id": "REFRESH",
+        "std_city_name": "WEST HARTFORD",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WESTMONT",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "POLK POND",
+        "create_date": null,
+        "city_name": "WEST HARTFORD",
+        "federal_facility_code": null,
+        "tribal_land_code": null,
+        "site_type_name": "STATIONARY",
+        "registry_id": "110044129314",
+        "primary_name": "POLK POND",
+        "std_state_code": "CT",
+        "county_name": "HARTFORD",
+        "small_bus_ind": null,
+        "std_street_name": "WESTMONT ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "-",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "09003",
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "HARTFORD COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": null,
+        "data_quality_code": "mS",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "06117",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 WESTMONT ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": null,
+        "Mfr_ID": 965,
+        "Mfr_Name": "FULMER FABRICATIONS",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Motorcycle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW AG",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 966,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "100 WILLIAM STREET",
+        "update_date": null,
+        "std_full_address": "100 WILLIAM ST, WELLESLEY HILLS, MA  02481 US",
+        "user_id": "DSMITH04",
+        "std_city_name": "WELLESLEY HILLS",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WILLIAM",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "WELLESLEY HLDNG 2ND",
+        "create_date": null,
+        "city_name": "WELLESLEY",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007370077",
+        "primary_name": "WELLESLEY HOLDING II",
+        "std_state_code": "MA",
+        "county_name": "NORFOLK",
+        "small_bus_ind": null,
+        "std_street_name": "WILLIAM ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02481-3701",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25021",
+        "fips_code": "25021",
+        "stand_alone_flag": "Y",
+        "std_house_number": "100",
+        "location_description": null,
+        "std_county_name": "NORFOLK COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02481",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "100 WILLIAM ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "GERMANY",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 966,
+        "Mfr_Name": "BMW AG",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW M GMBH",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 967,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 BEACON STREET",
+        "update_date": null,
+        "std_full_address": "101 BEACON ST, LAWRENCE, MA  01843 US",
+        "user_id": "DSMITH04",
+        "std_city_name": "LAWRENCE",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "BEACON",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "ESSEM PCKG",
+        "create_date": null,
+        "city_name": "LAWRENCE",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007257066",
+        "primary_name": "ESSEM PACKING COMPANY",
+        "std_state_code": "MA",
+        "county_name": "ESSEX",
+        "small_bus_ind": null,
+        "std_street_name": "BEACON ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01843",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25009",
+        "fips_code": "25009",
+        "stand_alone_flag": "N",
+        "std_house_number": "101",
+        "location_description": null,
+        "std_county_name": "ESSEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01843",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "101 BEACON ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "GERMANY",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 967,
+        "Mfr_Name": "BMW M GMBH",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW MANUFACTURER CORPORATION / BMW NORTH AMERICA",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 968,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 CENTRAL ST",
+        "update_date": null,
+        "std_full_address": "101 CENTRAL ST, HOLLISTON, MA  01746 US",
+        "user_id": "REFRESH",
+        "std_city_name": "HOLLISTON",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "CENTRAL",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "CVS PHARM 1860",
+        "create_date": null,
+        "city_name": "HOLLISTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110012573401",
+        "primary_name": "CVS PHARMACY 1860",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "CENTRAL ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01746",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "Y",
+        "std_house_number": "101",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01746",
+        "last_reported_date": null,
+        "legislative_dist_num": "C ",
+        "std_loc_address": "101 CENTRAL ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "BMW",
+        "Mfr_ID": 968,
+        "Mfr_Name": "BMW MANUFACTURER CORPORATION / BMW NORTH AMERICA",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MOTORCYCLE MACHINE SHOP SERVICES, LLC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 969,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 N IDAHO AVE",
+        "update_date": null,
+        "std_full_address": null,
+        "user_id": "REFRESH",
+        "std_city_name": null,
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": null,
+        "std_stype_after": null,
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "POLES",
+        "create_date": null,
+        "city_name": null,
+        "federal_facility_code": null,
+        "tribal_land_code": null,
+        "site_type_name": "STATIONARY",
+        "registry_id": "110046364046",
+        "primary_name": "POLES INC",
+        "std_state_code": null,
+        "county_name": null,
+        "small_bus_ind": null,
+        "std_street_name": null,
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": null,
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": null,
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": null,
+        "location_description": null,
+        "std_county_name": null,
+        "std_prefix": null,
+        "std_country": null,
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": null,
+        "data_quality_code": "mSmOmCmZ",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": null,
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": null,
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Motorcycle Machine Shop Services",
+        "Mfr_ID": 969,
+        "Mfr_Name": "MOTORCYCLE MACHINE SHOP SERVICES, LLC",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BUGATTI AUTOMOBILES S.A.S.",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 970,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "101 WALNUT STREET",
+        "update_date": null,
+        "std_full_address": "101 WALNUT ST, WATERTOWN, MA  02472 US",
+        "user_id": "KBLUMBER",
+        "std_city_name": "WATERTOWN",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "WALNUT",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "APAHOUSER",
+        "create_date": null,
+        "city_name": "WATERTOWN",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110007256753",
+        "primary_name": "APAHOUSER INC",
+        "std_state_code": "MA",
+        "county_name": "MIDDLESEX",
+        "small_bus_ind": null,
+        "std_street_name": "WALNUT ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02472-4026",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25017",
+        "fips_code": "25017",
+        "stand_alone_flag": "N",
+        "std_house_number": "101",
+        "location_description": null,
+        "std_county_name": "MIDDLESEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02472",
+        "last_reported_date": null,
+        "legislative_dist_num": "N ",
+        "std_loc_address": "101 WALNUT ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "FRANCE",
+        "Mfr_CommonName": "Bugatti",
+        "Mfr_ID": 970,
+        "Mfr_Name": "BUGATTI AUTOMOBILES S.A.S.",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Passenger Car"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "HOMBILT TRAILERS INC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 971,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1022 ELM STREET",
+        "update_date": null,
+        "std_full_address": null,
+        "user_id": "REFRESH",
+        "std_city_name": null,
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": null,
+        "std_stype_after": null,
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "HARTFORD BALL AND HARTFORD BRNG",
+        "create_date": null,
+        "city_name": null,
+        "federal_facility_code": null,
+        "tribal_land_code": null,
+        "site_type_name": "STATIONARY",
+        "registry_id": "110044151235",
+        "primary_name": "HARTFORD BALL & HARTFORD BEARING CO",
+        "std_state_code": null,
+        "county_name": null,
+        "small_bus_ind": null,
+        "std_street_name": null,
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": null,
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": null,
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": null,
+        "location_description": null,
+        "std_county_name": null,
+        "std_prefix": null,
+        "std_country": null,
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": null,
+        "data_quality_code": "mSmOmCmZ",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": null,
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": null,
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Hombilt",
+        "Mfr_ID": 971,
+        "Mfr_Name": "HOMBILT TRAILERS INC",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Trailer"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "BMW AG MOTORCYCLES",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 972,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "103 JOHNSON",
+        "update_date": null,
+        "std_full_address": "103 JOHNSON ST, LYNN, MA  01902 US",
+        "user_id": "GDH",
+        "std_city_name": "LYNN",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "JOHNSON",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "DEV SCH",
+        "create_date": null,
+        "city_name": "LYNN",
+        "federal_facility_code": null,
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011483581",
+        "primary_name": "DEVELOPMENTAL SCHOOL",
+        "std_state_code": "MA",
+        "county_name": "ESSEX",
+        "small_bus_ind": null,
+        "std_street_name": "JOHNSON ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "01902-4001",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25009",
+        "fips_code": "25009",
+        "stand_alone_flag": "Y",
+        "std_house_number": "103",
+        "location_description": null,
+        "std_county_name": "ESSEX COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "01902",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "103 JOHNSON ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "GERMANY",
+        "Mfr_CommonName": "BMW Motorrad (Motorcycles)",
+        "Mfr_ID": 972,
+        "Mfr_Name": "BMW AG MOTORCYCLES",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "AMERICAN CUSTOM GOLF CARS, INC",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 973,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "104 26 LORNE ST",
+        "update_date": null,
+        "std_full_address": null,
+        "user_id": "REFRESH",
+        "std_city_name": null,
+        "country_name": "CANADA",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": null,
+        "std_stype_after": null,
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "SUSSEX ENVIR SVC",
+        "create_date": null,
+        "city_name": "NEW WESTMINSTER",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110017774639",
+        "primary_name": "SUSSEX ENVIRONMENTAL SVC INC",
+        "std_state_code": null,
+        "county_name": null,
+        "small_bus_ind": null,
+        "std_street_name": null,
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "V3M 6G3",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": null,
+        "fips_code": null,
+        "stand_alone_flag": "Y",
+        "std_house_number": null,
+        "location_description": null,
+        "std_county_name": null,
+        "std_prefix": null,
+        "std_country": null,
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": null,
+        "state_code": "BC",
+        "data_quality_code": "iSmOiCiZ",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": null,
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": null,
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "ACG",
+        "Mfr_ID": 973,
+        "Mfr_Name": "AMERICAN CUSTOM GOLF CARS, INC",
+        "VehicleTypes": [
+          {
+            "IsPrimary": true,
+            "Name": "Low Speed Vehicle (LSV)"
+          },
+          {
+            "IsPrimary": false,
+            "Name": "Off-Road Vehicle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "MOONLIGHT AUTO",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 974,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "1043 PEARL ST",
+        "update_date": null,
+        "std_full_address": "1043 PEARL ST, BROCKTON, MA  02301 US",
+        "user_id": "REFRESH",
+        "std_city_name": "BROCKTON",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "PEARL",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "VERIZON NEW ENGLD",
+        "create_date": null,
+        "city_name": "BROCKTON",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110024292077",
+        "primary_name": "VERIZON NEW ENGLAND",
+        "std_state_code": "MA",
+        "county_name": "PLYMOUTH",
+        "small_bus_ind": null,
+        "std_street_name": "PEARL ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02301-5406",
+        "sensitive_ind": null,
+        "operating_status": null,
+        "std_county_fips": "25023",
+        "fips_code": "25023",
+        "stand_alone_flag": "N",
+        "std_house_number": "1043",
+        "location_description": null,
+        "std_county_name": "PLYMOUTH COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02301",
+        "last_reported_date": null,
+        "legislative_dist_num": "S ",
+        "std_loc_address": "1043 PEARL ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": null,
+        "Mfr_ID": 974,
+        "Mfr_Name": "MOONLIGHT AUTO",
+        "VehicleTypes": [
+          {
+            "IsPrimary": false,
+            "Name": "Motorcycle"
+          }
+        ]
+      },
+      "openstreetmap_raw": {}
+    }
+  },
+  {
+    "canonical_summary": {
+      "facility_name": "COOPER CYCLES",
+      "epa_registry_id": null,
+      "nhtsa_mfr_id": 975,
+      "location": {
+        "address": null,
+        "city": null,
+        "state": null,
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      }
+    },
+    "data_union": {
+      "epa_frs_raw": {
+        "state_name": " ",
+        "location_address": "104 ADAMS ST",
+        "update_date": null,
+        "std_full_address": "104 ADAMS ST, MEDFIELD, MA  02052 US",
+        "user_id": "REFRESH",
+        "std_city_name": "MEDFIELD",
+        "country_name": "UNITED STATES",
+        "tribal_land_name": null,
+        "federal_agency_code": null,
+        "std_stype_before": null,
+        "std_base_name": "ADAMS",
+        "std_stype_after": "ST",
+        "refresh_date": null,
+        "parent_registry_id": null,
+        "std_name": "GILTRON",
+        "create_date": null,
+        "city_name": "MEDFIELD",
+        "federal_facility_code": "N",
+        "tribal_land_code": "N",
+        "site_type_name": "STATIONARY",
+        "registry_id": "110011137670",
+        "primary_name": "GILTRON INC",
+        "std_state_code": "MA",
+        "county_name": "NORFOLK",
+        "small_bus_ind": null,
+        "std_street_name": "ADAMS ST",
+        "interest_status_code": null,
+        "review_reason": null,
+        "postal_code": "02052",
+        "sensitive_ind": "N",
+        "operating_status": null,
+        "std_county_fips": "25021",
+        "fips_code": "25021",
+        "stand_alone_flag": "N",
+        "std_house_number": "104",
+        "location_description": null,
+        "std_county_name": "NORFOLK COUNTY",
+        "std_prefix": null,
+        "std_country": "US",
+        "icis_identifier": null,
+        "public_ind": "Y",
+        "review_flag": null,
+        "supplemental_location": null,
+        "epa_region_code": "01",
+        "state_code": "MA",
+        "data_quality_code": "V",
+        "addr_type": "REGULAR URBAN",
+        "std_postal_code": "02052",
+        "last_reported_date": null,
+        "legislative_dist_num": null,
+        "std_loc_address": "104 ADAMS ST",
+        "std_suffix": null
+      },
+      "nhtsa_vpic_raw": {
+        "Country": "UNITED STATES (USA)",
+        "Mfr_CommonName": "Cooper Cycles",
+        "Mfr_ID": 975,
+        "Mfr_Name": "COOPER CYCLES",
+        "VehicleTypes": []
+      },
+      "openstreetmap_raw": {}
+    }
+  }
+]

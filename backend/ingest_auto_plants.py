@@ -9,11 +9,45 @@ approach ingest_industrial_convergence.py already uses.
 
 import json
 import logging
+import re
 from pathlib import Path
 
 import duckdb
 
 logger = logging.getLogger("uvicorn")
+
+# Supply-chain tier/role per NAICS code, in place of the source data's own
+# coarse facility_type (just "Assembly Plant" vs "Tier 1/2 Supplier
+# Facility" — see products' embedded "NAICS: ######" tag for the actual
+# per-facility manufacturing role). Order matters only for the fallback
+# search below; every facility in the current dataset carries exactly one
+# of these ten codes.
+NAICS_CLASSIFICATION: dict[str, str] = {
+    "336111": "OEM Assembly (Automobile)",
+    "336112": "OEM Assembly (Light Truck/SUV)",
+    "336211": "Body Manufacturing (Tier 1)",
+    "336310": "Engine & Engine Parts (Tier 1/2)",
+    "336320": "Electrical & Electronics (Tier 1/2)",
+    "336330": "Steering & Suspension (Tier 1/2)",
+    "336340": "Brake Systems (Tier 1/2)",
+    "336350": "Transmission & Powertrain (Tier 1/2)",
+    "336370": "Metal Stamping (Tier 1/2)",
+    "336390": "Other Vehicle Parts (Tier 1/2)",
+}
+
+_NAICS_PATTERN = re.compile(r"NAICS:\s*(\d+)")
+
+
+def _classify_facility_type(entry: dict, products: list) -> str:
+    """Reclassifies by NAICS code embedded in `products` (e.g. "...
+    (NAICS: 336111)"), falling back to the source's own facility_type for
+    any record whose NAICS code isn't in NAICS_CLASSIFICATION (e.g. older,
+    hand-curated entries that predate the EPA ECHO NAICS tagging)."""
+    for product in products:
+        match = _NAICS_PATTERN.search(str(product))
+        if match and match.group(1) in NAICS_CLASSIFICATION:
+            return NAICS_CLASSIFICATION[match.group(1)]
+    return str(entry.get("facility_type") or "Unknown")
 
 
 def _flatten_record(entry: dict) -> tuple | None:
@@ -29,7 +63,7 @@ def _flatten_record(entry: dict) -> tuple | None:
     return (
         str(entry.get("facility_name") or "Unknown"),
         str(entry.get("oem_or_parent") or "Unknown"),
-        str(entry.get("facility_type") or "Unknown"),
+        _classify_facility_type(entry, products),
         str(entry.get("state_abbr") or ""),
         str(entry.get("status") or "Unknown"),
         ", ".join(str(p) for p in products) if products else None,
@@ -39,6 +73,17 @@ def _flatten_record(entry: dict) -> tuple | None:
         float(lon),
         float(lat),
     )
+
+
+def _load_entries(json_path: Path) -> list[dict]:
+    """Parses either a single JSON array or JSON Lines (one object per
+    line) - source data has switched between both formats, and the file
+    extension alone doesn't reliably indicate which one a given file is."""
+    text = json_path.read_text()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return [json.loads(line) for line in text.splitlines() if line.strip()]
 
 
 def build_auto_plants_table(conn: duckdb.DuckDBPyConnection, json_path: Path) -> int:
@@ -63,7 +108,7 @@ def build_auto_plants_table(conn: duckdb.DuckDBPyConnection, json_path: Path) ->
         logger.warning(f"No auto-facilities source at {json_path}; auto_plants will be empty.")
         return 0
 
-    entries = json.loads(json_path.read_text())
+    entries = _load_entries(json_path)
     records = [rec for entry in entries if (rec := _flatten_record(entry)) is not None]
 
     if records:

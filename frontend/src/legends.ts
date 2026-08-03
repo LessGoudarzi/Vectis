@@ -54,14 +54,20 @@ export function fuelColorHex(fuelType: string | null | undefined): string {
   return FUEL_COLOR_BY_LABEL[fuelType ?? ''] ?? '#64748b';
 }
 
-// Matches the facility_type values in auto_facilities_VECA8.json
+// Matches backend/ingest_auto_plants.py's NAICS_CLASSIFICATION labels
+// (derived from the "NAICS: ######" code embedded in each facility's
+// products field), not the source data's own coarse facility_type.
 export const AUTO_PLANTS_LEGEND: LegendEntry[] = [
-  { label: 'Assembly', colorHex: '#F59E0B' },
-  { label: 'Battery', colorHex: '#22c55e' },
-  { label: 'Engine', colorHex: '#ef4444' },
-  { label: 'Transmission', colorHex: '#3b82f6' },
-  { label: 'Body/Stamping', colorHex: '#a855f7' },
-  { label: 'Other Major Component', colorHex: '#64748b' },
+  { label: 'OEM Assembly (Automobile)', colorHex: '#F59E0B' },
+  { label: 'OEM Assembly (Light Truck/SUV)', colorHex: '#fb923c' },
+  { label: 'Body Manufacturing (Tier 1)', colorHex: '#a855f7' },
+  { label: 'Engine & Engine Parts (Tier 1/2)', colorHex: '#ef4444' },
+  { label: 'Electrical & Electronics (Tier 1/2)', colorHex: '#eab308' },
+  { label: 'Steering & Suspension (Tier 1/2)', colorHex: '#06b6d4' },
+  { label: 'Brake Systems (Tier 1/2)', colorHex: '#ec4899' },
+  { label: 'Transmission & Powertrain (Tier 1/2)', colorHex: '#3b82f6' },
+  { label: 'Metal Stamping (Tier 1/2)', colorHex: '#6366f1' },
+  { label: 'Other Vehicle Parts (Tier 1/2)', colorHex: '#64748b' },
 ];
 
 const AUTO_PLANTS_COLOR_BY_LABEL: Record<string, string> = Object.fromEntries(
@@ -122,7 +128,7 @@ export function getFeatureCategoryLabel(layerId: LayerId, properties: any): stri
     case 'nerc-subregions':
       return NERC_REGION_COLOR_BY_LABEL[properties?.nerc_region] ? properties.nerc_region : 'Unknown';
     case 'auto-plants':
-      return AUTO_PLANTS_COLOR_BY_LABEL[properties?.facility_type] ? properties.facility_type : 'Other Major Component';
+      return AUTO_PLANTS_COLOR_BY_LABEL[properties?.facility_type] ? properties.facility_type : 'Other Vehicle Parts (Tier 1/2)';
     default:
       return 'Unknown';
   }

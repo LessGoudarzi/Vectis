@@ -39,7 +39,6 @@ from typing import Optional
 logger = logging.getLogger("uvicorn")
 
 DEFAULT_MAX_MILES = 250.0
-ANCHOR_SEARCH_MILES = 2.0
 
 
 @dataclass
@@ -113,8 +112,12 @@ def load_grid_graph(sqlite_db_path: Path, line_length_miles: dict[int, float]) -
     return graph
 
 
-def find_anchor_node(graph: GridGraph, plant_lon: float, plant_lat: float, max_miles: float = ANCHOR_SEARCH_MILES) -> Optional[int]:
-    """Nearest graph node to a plant's coordinates, within max_miles.
+def find_anchor_node(graph: GridGraph, plant_lon: float, plant_lat: float, max_miles: float = math.inf) -> Optional[int]:
+    """Nearest graph node to a plant's coordinates. Unbounded by default —
+    scans every node regardless of distance so a facility far from the
+    grid still resolves to its closest (if farthest) node rather than
+    coming back "not_connected"; max_miles remains available for callers
+    that do want a hard cutoff.
     Linear scan over ~70K nodes — a few tens of milliseconds, run once
     per trace request, not worth indexing for this volume."""
     best_node, best_dist = None, max_miles

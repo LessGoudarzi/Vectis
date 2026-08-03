@@ -1,0 +1,92 @@
+{
+  "llm_prompt": {
+    "role": "You are a manufacturing-site intelligence analyst.",
+    "task": "Populate the plant spec sheet below using only factual, verifiable information from the provided source material.",
+    "instructions": [
+      "Return valid JSON.",
+      "Do not invent unsupported values.",
+      "Use null for unknown values.",
+      "Keep facility_type values aligned to the provided examples."
+    ],
+    "spec_sheet": {
+      "state": "string",
+      "state_abbr": "string",
+      "facility_name": "string",
+      "plant_id": "string",
+      "name": "string",
+      "oem_or_parent": "string",
+      "facility_type": "string",
+      "products": [
+        "string"
+      ],
+      "location": {
+        "city": "string",
+        "address_or_area": "string",
+        "coordinates": {
+          "lat": 0.0,
+          "lon": 0.0
+        }
+      },
+      "status": "string",
+      "opened_or_announced": null,
+      "approximate_employment": null,
+      "annual_capacity_estimate": null,
+      "notes": "string",
+      "last_verified": "YYYY-MM-DD",
+      "sources": [
+        "string"
+      ],
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "total_sq_ft": 0.0,
+      "clear_height_ft": 0.0,
+      "floor_load_lb_sqft": 0.0,
+      "existing_shops": [
+        "string"
+      ],
+      "current_certifications": [
+        "string"
+      ],
+      "has_cleanroom": false,
+      "defense_conversion_profile": {
+        "facility_characteristics": {
+          "building_type_and_clear_span": "string",
+          "floor_loading_capacity": "string",
+          "crane_and_overhead_handling": "string",
+          "available_utilities": "string",
+          "site_size_and_expansion_room": "string",
+          "security_and_access_control": "string"
+        },
+        "production_capabilities": {
+          "current_processes": [
+            "string"
+          ],
+          "precision_and_tolerance_levels": "string",
+          "existing_automation_and_robotics": "string",
+          "cleanroom_or_controlled_environment": "string",
+          "testing_and_quality_infrastructure": "string"
+        },
+        "workforce_and_skills": {
+          "approximate_skilled_trades": "string",
+          "engineering_presence_on_site": "string",
+          "union_status_and_flexibility_notes": "string",
+          "training_infrastructure": "string"
+        },
+        "supply_chain_and_logistics": {
+          "proximity_to_key_suppliers_or_ports": "string",
+          "rail_or_heavy_transport_access": "string",
+          "existing_defense_or_aerospace_suppliers_nearby": "string"
+        },
+        "historical_or_current_dual_use": {
+          "prior_defense_work": "string",
+          "ITAR_or_export_control_experience": "string",
+          "existing_security_clearances_on_site": "string"
+        },
+        "conversion_indicators_summary": "string",
+        "data_gaps": [
+          "string"
+        ]
+      }
+    }
+  }
+}

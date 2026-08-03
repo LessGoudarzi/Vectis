@@ -20,6 +20,7 @@ AUTO_PLANTS_JSON = BASE_DIR.parent / "auto_facilities_VECA8.json"
 class SpatialDatabase:
     def __init__(self):
         self.conn = duckdb.connect(database=':memory:')
+        self._geojson_cache: dict = {}
         self._init_spatial()
 
     def _init_spatial(self):
@@ -72,28 +73,69 @@ class SpatialDatabase:
         """Re-ingest agent payloads without restarting the process."""
         self._seed_industrial_convergence()
 
+    # ~1.1m grid — snaps every layer's coordinates down from float64's ~14
+    # decimal digits (physically meaningless at this scale) to something
+    # actually relevant for a national-grid-scale map, shrinking the GeoJSON
+    # text substantially before it's even simplified.
+    _COORD_PRECISION = 0.00001
+    # Douglas-Peucker tolerance per table, applied on top of the precision
+    # snap above. No-ops on point geometries (auto_plants/power_plants/
+    # substations), so only line/polygon tables actually shrink further.
+    # nerc_subregions is background-only context (never precisely
+    # inspected), so it tolerates a much coarser ~11m simplification than
+    # power_grid's transmission lines (~3m, imperceptible at any real
+    # zoom but still recognizably the same route).
+    _SIMPLIFY_TOLERANCE = {
+        "nerc_subregions": 0.0001,
+    }
+    _DEFAULT_SIMPLIFY_TOLERANCE = 0.00003
+
     def get_layer_geojson(self, table_name: str, bbox: tuple = None) -> str:
+        # These tables are only ever (re)built at startup, never mutated
+        # in place, so caching per (table, bbox) is safe for the process
+        # lifetime — avoids re-running the json_group_array aggregation
+        # (and the ST_AsGeoJSON pass over every geometry) on every request
+        # for the same viewport/layer.
+        cache_key = (table_name, bbox)
+        cached = self._geojson_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         bbox_filter = ""
         if bbox:
             min_lon, min_lat, max_lon, max_lat = bbox
             bbox_filter = f"WHERE ST_Intersects(geom, ST_MakeEnvelope({min_lon}, {min_lat}, {max_lon}, {max_lat}))"
 
+        tolerance = self._SIMPLIFY_TOLERANCE.get(table_name, self._DEFAULT_SIMPLIFY_TOLERANCE)
+        geom_expr = f"ST_SimplifyPreserveTopology(ST_ReducePrecision(g.geom, {self._COORD_PRECISION}), {tolerance})"
+
+        # `rowid`-correlated LATERAL join, rather than a plain `to_json(t)`
+        # on the full row, so the geometry (already emitted once as GeoJSON
+        # coordinates) isn't also duplicated as WKT text inside every
+        # feature's properties — that duplication alone was ~7% of the
+        # auto_plants payload.
         query = f'''
+            WITH filtered AS (
+                SELECT rowid AS _rid, * FROM {table_name} t
+                {bbox_filter}
+            )
             SELECT json_object(
                 'type', 'FeatureCollection',
                 'features', COALESCE(json_group_array(
                     json_object(
                         'type', 'Feature',
-                        'geometry', json(ST_AsGeoJSON(geom)),
-                        'properties', json(to_json(t))
+                        'geometry', json(ST_AsGeoJSON({geom_expr})),
+                        'properties', json(to_json(p))
                     )
                 ), json_array())
             ) AS geojson
-            FROM {table_name} t
-            {bbox_filter};
+            FROM filtered g,
+            LATERAL (SELECT * EXCLUDE (geom, _rid) FROM filtered f WHERE f._rid = g._rid) p;
         '''
         result = self.conn.execute(query).fetchone()
-        return result[0] if result and result[0] else '{"type": "FeatureCollection", "features": []}'
+        geojson = result[0] if result and result[0] else '{"type": "FeatureCollection", "features": []}'
+        self._geojson_cache[cache_key] = geojson
+        return geojson
 
     def get_industrial_convergence_geojson(
         self,

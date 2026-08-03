@@ -55,7 +55,11 @@ function recolorBasemap(evt: any) {
 export const GISMapContainer: React.FC = () => {
   const { layers, toggleVisibility, updateOpacity, toggleLegend, categoryFilters, toggleCategory, setAllCategories } =
     useLayerState();
-  const { datasets } = useGISData();
+  const visibleLayerIds = useMemo(
+    () => layers.filter((lyr) => lyr.visible).map((lyr) => lyr.id),
+    [layers]
+  );
+  const { datasets } = useGISData(visibleLayerIds);
   const trace = useNetworkTrace();
   const [hoverInfo, setHoverInfo] = useState<any>(null);
   const [pinnedInfo, setPinnedInfo] = useState<any>(null);

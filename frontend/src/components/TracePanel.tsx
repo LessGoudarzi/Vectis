@@ -61,7 +61,7 @@ export const TracePanel: React.FC<TracePanelProps> = ({
 
       {!loading && result?.status === 'not_connected' && (
         <p className="text-[11px] text-slate-400">
-          No transmission connection found within 2 miles of this facility.
+          No transmission connection found for this facility.
         </p>
       )}
       {!loading && result?.status === 'not_found' && (

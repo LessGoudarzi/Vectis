@@ -39,8 +39,8 @@ export const LayerManager: React.FC<LayerManagerProps> = ({
   }
 
   return (
-    <div className="absolute top-4 left-4 z-20 w-80 rounded-xl border border-slate-700/50 bg-slate-900/80 p-4 shadow-2xl backdrop-blur-md text-slate-100">
-      <div className="mb-4 flex items-center justify-between border-b border-slate-700/60 pb-3">
+    <div className="absolute top-4 left-4 z-20 flex max-h-[calc(100vh-2rem)] w-80 flex-col rounded-xl border border-slate-700/50 bg-slate-900/80 p-4 shadow-2xl backdrop-blur-md text-slate-100">
+      <div className="mb-4 flex shrink-0 items-center justify-between border-b border-slate-700/60 pb-3">
         <div className="flex items-center gap-2">
           <Sliders className="h-5 w-5 text-cyan-400" />
           <h2 className="font-semibold text-sm uppercase tracking-wider">Layer Control</h2>
@@ -59,7 +59,7 @@ export const LayerManager: React.FC<LayerManagerProps> = ({
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 overflow-y-auto pr-1">
         {layers.map((lyr) => {
           const legend = LAYER_LEGENDS[lyr.id];
           const active = categoryFilters[lyr.id] ?? new Set<string>();

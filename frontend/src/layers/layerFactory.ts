@@ -8,6 +8,15 @@ const hexToRgb = (hex: string): [number, number, number] => {
   return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
 };
 
+// Solid white square, tinted per-feature via getIconColor (mask: true treats
+// the image as a single-channel alpha mask rather than fixed RGB).
+const SQUARE_ICON = {
+  url: 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="white"/></svg>'),
+  width: 10,
+  height: 10,
+  mask: true,
+};
+
 function filterByActiveCategories(layerId: LayerId, data: any, activeCategories: Set<string>) {
   if (!data?.features) return data;
   return {
@@ -60,16 +69,17 @@ export function createDeckGLLayers(
             // Colored by facility_type (see legends.ts's AUTO_PLANTS_LEGEND) —
             // Assembly / Battery / Engine / Transmission / Body-Stamping /
             // Other Major Component, matching the real data's categories.
-            pointRadiusMinPixels: 8,
-            pointRadiusMaxPixels: 8,
-            getFillColor: (f: any) => {
+            pointType: 'icon',
+            getIcon: () => SQUARE_ICON,
+            iconSizeUnits: 'pixels',
+            getIconSize: 6,
+            iconSizeMinPixels: 6,
+            iconSizeMaxPixels: 6,
+            getIconColor: (f: any) => {
               const props = f.properties as AutoPlantProperties;
               return [...hexToRgb(autoPlantColorHex(props.facility_type)), highlightAlpha(220, isMatch(f), isExempt(f), highlightActive)];
             },
-            getLineColor: (f: any) => [255, 255, 255, highlightAlpha(255, isMatch(f), isExempt(f), highlightActive)],
-            getLineWidth: 2,
-            lineWidthMinPixels: 2,
-            updateTriggers: { getFillColor: [highlightVersion], getLineColor: [highlightVersion] },
+            updateTriggers: { getIconColor: [highlightVersion] },
             onHover,
           });
 

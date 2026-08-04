@@ -39,7 +39,7 @@ export const LayerManager: React.FC<LayerManagerProps> = ({
   }
 
   return (
-    <div className="absolute top-4 left-4 z-20 flex max-h-[calc(100vh-2rem)] w-80 flex-col rounded-xl border border-slate-700/50 bg-slate-900/80 p-4 shadow-2xl backdrop-blur-md text-slate-100">
+    <div className="absolute top-4 left-4 z-20 flex max-h-[calc(100vh-2rem)] w-[30rem] flex-col rounded-xl border border-slate-700/50 bg-slate-900/80 p-4 shadow-2xl backdrop-blur-md text-slate-100">
       <div className="mb-4 flex shrink-0 items-center justify-between border-b border-slate-700/60 pb-3">
         <div className="flex items-center gap-2">
           <Sliders className="h-5 w-5 text-cyan-400" />

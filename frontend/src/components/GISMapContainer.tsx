@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import DeckGL from '@deck.gl/react';
+import { WebMercatorViewport, FlyToInterpolator } from '@deck.gl/core';
 import { Map } from 'react-map-gl';
 import { useLayerState } from '../hooks/useLayerState';
 import { useGISData } from '../hooks/useGISData';
@@ -24,6 +25,49 @@ const INITIAL_VIEW_STATE = {
 };
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
+
+// Recurses through a GeoJSON geometry's (possibly nested) coordinate
+// arrays — same shape works for Point, LineString, and Polygon/MultiPolygon
+// alike — expanding `bounds` ([minLng, minLat, maxLng, maxLat]) in place.
+function expandBoundsWithGeometry(geometry: any, bounds: [number, number, number, number]): void {
+  if (!geometry) return;
+  if (geometry.type === 'GeometryCollection') {
+    geometry.geometries?.forEach((g: any) => expandBoundsWithGeometry(g, bounds));
+    return;
+  }
+  const walk = (coords: any): void => {
+    if (typeof coords[0] === 'number') {
+      const [lng, lat] = coords;
+      if (lng < bounds[0]) bounds[0] = lng;
+      if (lat < bounds[1]) bounds[1] = lat;
+      if (lng > bounds[2]) bounds[2] = lng;
+      if (lat > bounds[3]) bounds[3] = lat;
+    } else {
+      coords.forEach(walk);
+    }
+  };
+  walk(geometry.coordinates);
+}
+
+// [minLng, minLat, maxLng, maxLat] across every currently-loaded feature
+// that matches the active highlight, or null if nothing matches yet (empty
+// query, no hits, or the relevant layer isn't loaded/visible) — used to fly
+// the camera to the investigate result instead of leaving the user to hunt
+// for it on the map.
+function computeMatchedBounds(datasets: Record<string, any>, highlight: ActiveHighlight): [number, number, number, number] | null {
+  const bounds: [number, number, number, number] = [Infinity, Infinity, -Infinity, -Infinity];
+  let found = false;
+  for (const layerId of Object.keys(datasets)) {
+    const features = datasets[layerId]?.features ?? [];
+    for (const feature of features) {
+      if (highlight.isMatch(layerId as any, feature.properties)) {
+        found = true;
+        expandBoundsWithGeometry(feature.geometry, bounds);
+      }
+    }
+  }
+  return found ? bounds : null;
+}
 
 // Matches the app chrome's own background (Tailwind slate-950) instead of
 // dark-v11's stock gray, so the map reads as part of the UI rather than a
@@ -66,6 +110,23 @@ export const GISMapContainer: React.FC = () => {
   const [pinnedInfo, setPinnedInfo] = useState<any>(null);
   const [investigateMode, setInvestigateMode] = useState<InvestigateMode>('owner');
   const [investigateQuery, setInvestigateQuery] = useState('');
+  const [viewState, setViewState] = useState<Record<string, any>>(INITIAL_VIEW_STATE);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapDimensionsRef = useRef({ width: window.innerWidth, height: window.innerHeight });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    // ResizeObserver reflects the actual DeckGL canvas size — window.innerWidth
+    // /innerHeight measured the browser viewport, which doesn't always match
+    // (e.g. devicePixelRatio/layout differences), throwing off fitBounds' zoom.
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      mapDimensionsRef.current = { width, height };
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Owner/NERC-region/state investigation and network trace are mutually
   // exclusive modes — starting one clears the others, so layerFactory only
@@ -152,8 +213,49 @@ export const GISMapContainer: React.FC = () => {
     [layers, datasets, categoryFilters, highlight, highlightVersion]
   );
 
+  // Flies the camera to whatever the current investigate query matches —
+  // debounced so free-text owner search doesn't yank the map on every
+  // keystroke, only once typing settles. Trace mode manages its own camera
+  // via revealed lines, so this only applies to investigate.
+  useEffect(() => {
+    if (trace.active || !investigateQuery.trim()) return;
+    const timer = window.setTimeout(() => {
+      const bounds = computeMatchedBounds(datasets, highlight!);
+      if (!bounds) return;
+      const { width, height } = mapDimensionsRef.current;
+      const viewport = new WebMercatorViewport({ width, height });
+      // Proportional (not fixed-pixel) padding — a fixed value like 120px
+      // eats a huge share of a narrow/embedded viewport's target area,
+      // under-zooming the result far more than intended on smaller screens.
+      const paddingX = width * 0.12;
+      const paddingY = height * 0.12;
+      const { longitude, latitude, zoom } = viewport.fitBounds(
+        [
+          [bounds[0], bounds[1]],
+          [bounds[2], bounds[3]],
+        ],
+        { padding: { top: paddingY, bottom: paddingY, left: paddingX, right: paddingX }, maxZoom: 12 }
+      );
+      setViewState((prev) => ({
+        ...prev,
+        longitude,
+        latitude,
+        zoom,
+        // fitBounds computes for a flat top-down projection — with the
+        // map's default pitch left in place, the tilt makes the fitted
+        // area appear to overshoot past the actual target on screen, so
+        // level the camera for an accurate view of the investigate area.
+        pitch: 0,
+        bearing: 0,
+        transitionDuration: 800,
+        transitionInterpolator: new FlyToInterpolator(),
+      }));
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [investigateMode, investigateQuery, datasets, highlight, trace.active]);
+
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-slate-950">
+    <div ref={containerRef} className="relative h-screen w-screen overflow-hidden bg-slate-950">
       <LayerManager
         layers={layers}
         onToggle={toggleVisibility}
@@ -189,7 +291,8 @@ export const GISMapContainer: React.FC = () => {
       )}
 
       <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
+        viewState={viewState}
+        onViewStateChange={({ viewState: next }) => setViewState(next)}
         controller={true}
         layers={deckLayers}
         getCursor={({ isHovering }) => (isHovering ? 'pointer' : 'default')}

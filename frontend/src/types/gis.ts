@@ -59,6 +59,10 @@ export interface TransmissionLineProperties {
   volt_class: string;
   status: string;
   line_type: string;
+  // Inferred from the nearest substation at ingest time (HIFLD lines carry
+  // no state property of their own) - see
+  // _infer_line_state_from_nearby_substations in ingest_power_grid.py.
+  state: string;
   // Derived from the line's from_node_id at ingest time, not a separate
   // polygon test — keeps "in the home subregion" consistent with what
   // trace.py's own subregion-bounded stopping condition means.

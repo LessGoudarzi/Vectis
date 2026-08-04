@@ -38,10 +38,16 @@ const MODE_PLACEHOLDER: Record<InvestigateMode, string> = {
 const MODE_DESCRIPTION: Record<InvestigateMode, string> = {
   owner: 'Transmission Lines, Power Plants, Substations (inferred), and Auto Facilities',
   'nerc-region': 'Transmission Lines, Power Plants, Substations, Auto Facilities, and NERC Subregions',
-  state: 'Power Plants, Substations, and Auto Facilities',
+  state: 'Transmission Lines (inferred), Power Plants, Substations, and Auto Facilities',
 };
 
 const MAX_SUGGESTIONS = 8;
+
+// Owner names are a large, open-ended set (best explored by typing +
+// autocomplete); NERC regions and states are small closed sets already
+// fully known once their backing layers are loaded, so those two modes
+// get a plain dropdown of every distinct value instead.
+const DROPDOWN_MODES = new Set<InvestigateMode>(['nerc-region', 'state']);
 
 export const InvestigatePanel: React.FC<InvestigatePanelProps> = ({
   layers,
@@ -65,12 +71,14 @@ export const InvestigatePanel: React.FC<InvestigatePanelProps> = ({
     return collectDistinctAttributeValues(mode === 'nerc-region' ? NERC_REGION_SEARCH : STATE_SEARCH, datasets);
   }, [mode, datasets]);
 
+  const isDropdownMode = DROPDOWN_MODES.has(mode);
+
   const trimmed = query.trim();
   const suggestions = useMemo(() => {
-    if (!trimmed) return [];
+    if (isDropdownMode || !trimmed) return [];
     const needle = trimmed.toLowerCase();
     return distinctValues.filter((v) => v.toLowerCase().includes(needle)).slice(0, MAX_SUGGESTIONS);
-  }, [distinctValues, trimmed]);
+  }, [isDropdownMode, distinctValues, trimmed]);
 
   const matchCounts = useMemo(() => {
     if (!trimmed) return {};
@@ -109,37 +117,54 @@ export const InvestigatePanel: React.FC<InvestigatePanelProps> = ({
       </p>
 
       <div className="relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setTimeout(() => setFocused(false), 150)}
-          placeholder={MODE_PLACEHOLDER[mode]}
-          className="w-full rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
-        />
-        {query && (
-          <button
-            onClick={() => onQueryChange('')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-            title="Clear"
+        {isDropdownMode ? (
+          <select
+            value={query}
+            onChange={(e) => onQueryChange(e.target.value)}
+            className="w-full rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1.5 text-xs text-white outline-none focus:border-cyan-400"
           >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-
-        {showDropdown && (
-          <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-slate-700 bg-slate-800 shadow-xl">
-            {suggestions.map((value) => (
-              <button
-                key={value}
-                onMouseDown={() => onQueryChange(value)}
-                className="block w-full truncate px-3 py-1.5 text-left text-[11px] text-slate-200 hover:bg-slate-700"
-              >
+            <option value="">All {MODE_LABEL[mode]}s ({distinctValues.length} loaded)</option>
+            {distinctValues.map((value) => (
+              <option key={value} value={value}>
                 {value}
-              </button>
+              </option>
             ))}
-          </div>
+          </select>
+        ) : (
+          <>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => onQueryChange(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setTimeout(() => setFocused(false), 150)}
+              placeholder={MODE_PLACEHOLDER[mode]}
+              className="w-full rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
+            />
+            {query && (
+              <button
+                onClick={() => onQueryChange('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                title="Clear"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+
+            {showDropdown && (
+              <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-slate-700 bg-slate-800 shadow-xl">
+                {suggestions.map((value) => (
+                  <button
+                    key={value}
+                    onMouseDown={() => onQueryChange(value)}
+                    className="block w-full truncate px-3 py-1.5 text-left text-[11px] text-slate-200 hover:bg-slate-700"
+                  >
+                    {value}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 

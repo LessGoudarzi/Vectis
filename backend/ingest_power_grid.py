@@ -125,7 +125,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         """
         CREATE TABLE power_grid (
             id INTEGER, owner TEXT, voltage INTEGER, volt_class TEXT,
-            status TEXT, line_type TEXT, length_miles DOUBLE, subregion_name TEXT, geom GEOMETRY
+            status TEXT, line_type TEXT, state TEXT, length_miles DOUBLE, subregion_name TEXT, geom GEOMETRY
         )
         """
     )
@@ -153,7 +153,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         logger.warning(f"No SQLite source at {sqlite_db_path}; power_grid/power_plants/substations will be empty.")
         return {"power_grid": 0, "power_plants": 0, "substations": 0}
 
-    line_columns = ["id", "owner", "voltage", "volt_class", "status", "line_type"]
+    line_columns = ["id", "owner", "voltage", "volt_class", "status", "line_type", "state"]
     sconn = sqlite3.connect(str(sqlite_db_path))
     has_from_node_id = any(row[1] == "from_node_id" for row in sconn.execute("PRAGMA table_info(transmission_lines)"))
     sconn.close()
@@ -167,10 +167,11 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
             (row, _reproject_geometry(json.loads(row["geojson_geom"]))) for row in line_rows
         ]
         conn.executemany(
-            "INSERT INTO power_grid VALUES (?, ?, ?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
+            "INSERT INTO power_grid VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ST_GeomFromGeoJSON(?))",
             [
                 (
                     row["id"], row["owner"], row["voltage"], row["volt_class"], row["status"], row["line_type"],
+                    row["state"],
                     _geometry_length_miles(geometry),
                     node_subregion.get(row["from_node_id"]) if has_from_node_id else None,
                     json.dumps(geometry),
@@ -214,6 +215,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
 
     if line_rows and substation_rows:
         _link_substations_to_nearby_line_owners(conn)
+        _infer_line_state_from_nearby_substations(conn)
 
     subregion_count = build_nerc_subregions_table(conn, sqlite_db_path)
 
@@ -321,4 +323,37 @@ def _link_substations_to_nearby_line_owners(conn: duckdb.DuckDBPyConnection) -> 
     logger.info(
         f"Resolved nearby_line_owners for {resolved}/{total} substations "
         f"({100 * resolved / total:.1f}%) within {SUBSTATION_OWNER_JOIN_BUFFER_DEG}deg"
+    )
+
+
+def _infer_line_state_from_nearby_substations(conn: duckdb.DuckDBPyConnection) -> None:
+    """HIFLD transmission-line records carry no state property at all (unlike
+    substations, which do) - infer each line's state from the nearest
+    substation within SUBSTATION_OWNER_JOIN_BUFFER_DEG, the reverse of
+    _link_substations_to_nearby_line_owners' lookup. Best-effort/approximate,
+    not authoritative - a line can legitimately span into a neighboring state
+    past whichever substation happens to be closest.
+    """
+    conn.execute("CREATE INDEX IF NOT EXISTS substations_geom_rtree ON substations USING RTREE (geom)")
+    invalid_states = ", ".join(f"'{v}'" for v in _INVALID_OWNER_VALUES)
+    conn.execute(
+        f"""
+        UPDATE power_grid
+        SET state = (
+            SELECT s.state
+            FROM substations s
+            WHERE ST_DWithin(power_grid.geom, s.geom, {SUBSTATION_OWNER_JOIN_BUFFER_DEG})
+              AND s.state NOT IN ({invalid_states})
+            ORDER BY ST_Distance(power_grid.geom, s.geom)
+            LIMIT 1
+        )
+        WHERE state IN ({invalid_states})
+        """
+    )
+    total, resolved = conn.execute(
+        f"SELECT COUNT(*), COUNT(*) FILTER (state NOT IN ({invalid_states})) FROM power_grid"
+    ).fetchone()
+    logger.info(
+        f"Inferred state for {resolved}/{total} transmission lines "
+        f"({100 * resolved / total:.1f}%) within {SUBSTATION_OWNER_JOIN_BUFFER_DEG}deg of a substation"
     )

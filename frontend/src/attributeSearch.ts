@@ -5,11 +5,15 @@ import { ActiveHighlight, LayerId } from './types/gis';
 // layer (no substations-style list-of-owners special case to handle).
 export interface AttributeSearchConfig {
   /** Layer -> property key holding the searchable value. Layers omitted
-   * here have no matching concept for this mode (e.g. transmission lines
-   * have no `state` field) and are skipped, same as owners.ts does for
+   * here have no matching concept for this mode (e.g. nerc_subregions
+   * has no `state` field) and are skipped, same as owners.ts does for
    * industrial-convergence. */
   fieldByLayer: Partial<Record<LayerId, string>>;
   invalidValues?: Set<string>;
+  /** Collapses differently-formatted values from different layers (e.g.
+   * power_plants' "Texas" vs. substations/auto_plants' "TX") down to one
+   * canonical form, so they're treated as the same value everywhere. */
+  normalize?: (value: string) => string;
 }
 
 function getFeatureAttributeValue(config: AttributeSearchConfig, layerId: LayerId, properties: any): string | null {
@@ -17,7 +21,7 @@ function getFeatureAttributeValue(config: AttributeSearchConfig, layerId: LayerI
   if (!field) return null;
   const value = properties?.[field];
   if (!value || config.invalidValues?.has(value)) return null;
-  return value;
+  return config.normalize ? config.normalize(value) : value;
 }
 
 export function featureMatchesAttributeQuery(
@@ -83,14 +87,45 @@ export const NERC_REGION_SEARCH: AttributeSearchConfig = {
   },
 };
 
-// Transmission lines can span multiple states and nerc_subregions has no
-// state concept at all, so both are omitted here (same pattern as owners.ts
-// omitting industrial-convergence).
+// power_plants (EIA) stores full state names; substations (HIFLD) and
+// auto_plants (EPA ECHO) store 2-letter USPS codes. Without normalizing,
+// picking "Texas" only matches power_plants and picking "TX" only matches
+// the other two, even though they mean the same state.
+const STATE_NAME_TO_ABBR: Record<string, string> = {
+  alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA',
+  colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC',
+  florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL',
+  indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA',
+  maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI', minnesota: 'MN',
+  mississippi: 'MS', missouri: 'MO', montana: 'MT', nebraska: 'NE', nevada: 'NV',
+  'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+  'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK',
+  oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+  'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT',
+  virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI',
+  wyoming: 'WY', 'puerto rico': 'PR', guam: 'GU', 'american samoa': 'AS',
+  'virgin islands': 'VI', 'northern mariana islands': 'MP',
+};
+
+function normalizeStateValue(value: string): string {
+  return (STATE_NAME_TO_ABBR[value.trim().toLowerCase()] ?? value).toUpperCase();
+}
+
+// HIFLD's transmission-line records carry no state property at all, so
+// power_grid's state here is inferred backend-side from the nearest
+// substation within a small buffer (see
+// _infer_line_state_from_nearby_substations in ingest_power_grid.py) —
+// best-effort/approximate, not authoritative, since a line can span into
+// a neighboring state past whichever substation happens to be closest.
+// nerc_subregions has no state concept at all, so it's the only layer
+// omitted here.
 export const STATE_SEARCH: AttributeSearchConfig = {
   fieldByLayer: {
+    'power-grid': 'state',
     'power-plants': 'state',
     substations: 'state',
     'auto-plants': 'state',
   },
   invalidValues: new Set(['NOT AVAILABLE', 'Unknown', '']),
+  normalize: normalizeStateValue,
 };

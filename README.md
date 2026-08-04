@@ -181,7 +181,7 @@ vectis/
 │   └── src/
 │       ├── components/GISMapContainer.tsx    # map + Deck.gl wiring
 │       ├── components/LayerManager.tsx       # layer panel, legends, filters
-│       ├── components/OwnerSearch.tsx        # search facilities by owner name
+│       ├── components/InvestigatePanel.tsx   # search facilities by owner, NERC region, or state
 │       ├── components/TracePanel.tsx         # network trace visualization/playback
 │       ├── components/FeatureTooltip.tsx     # hover/click feature detail popup
 │       ├── hooks/useGISData.ts               # lazy-loads each layer's GeoJSON

@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Zap } from 'lucide-react';
 import { LayerId } from '../types/gis';
 import { getFeatureOwners } from '../owners';
+import { STATE_SEARCH } from '../attributeSearch';
 import { TraceableLayerId } from '../networkTrace';
 
 const TRACEABLE_LAYERS = new Set<string>(['power-plants', 'auto-plants']);
@@ -18,6 +19,8 @@ interface FeatureTooltipProps {
   // actually usable.
   pinned?: boolean;
   onFilterOwner?: (owner: string) => void;
+  onFilterNercRegion?: (subregionName: string) => void;
+  onFilterState?: (state: string) => void;
   onTracePlant?: (layerId: TraceableLayerId, facilityId: number, facilityName: string) => void;
   onClose?: () => void;
 }
@@ -58,11 +61,16 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
   properties,
   pinned = false,
   onFilterOwner,
+  onFilterNercRegion,
+  onFilterState,
   onTracePlant,
   onClose,
 }) => {
   const entries = Object.entries(properties ?? {}).filter(([key]) => !HIDDEN_KEYS.has(key));
   const owners = pinned ? getFeatureOwners(layerId as LayerId, properties) : [];
+  const subregionName: string | null = pinned ? properties?.subregion_name ?? null : null;
+  const rawState: string | null = pinned ? properties?.state ?? null : null;
+  const state = rawState && !STATE_SEARCH.invalidValues?.has(rawState) ? rawState : null;
   const canTrace = pinned && TRACEABLE_LAYERS.has(layerId) && onTracePlant && properties?.id != null;
   const facilityName = properties?.plant_name ?? properties?.facility_name ?? 'Unnamed Facility';
 
@@ -113,6 +121,28 @@ export const FeatureTooltip: React.FC<FeatureTooltipProps> = ({
               Filter to: {owner}
             </button>
           ))}
+        </div>
+      )}
+
+      {subregionName && onFilterNercRegion && (
+        <div className="shrink-0 px-3 pt-2">
+          <button
+            onClick={() => onFilterNercRegion(subregionName)}
+            className="block w-full truncate rounded bg-cyan-500/15 px-2 py-1 text-left text-[11px] font-medium text-cyan-300 hover:bg-cyan-500/25"
+          >
+            Filter to NERC region: {subregionName}
+          </button>
+        </div>
+      )}
+
+      {state && onFilterState && (
+        <div className="shrink-0 px-3 pt-2">
+          <button
+            onClick={() => onFilterState(state)}
+            className="block w-full truncate rounded bg-cyan-500/15 px-2 py-1 text-left text-[11px] font-medium text-cyan-300 hover:bg-cyan-500/25"
+          >
+            Filter to state: {state}
+          </button>
         </div>
       )}
 

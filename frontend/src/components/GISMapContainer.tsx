@@ -6,11 +6,12 @@ import { useGISData } from '../hooks/useGISData';
 import { useNetworkTrace } from '../hooks/useNetworkTrace';
 import { createDeckGLLayers } from '../layers/layerFactory';
 import { createOwnerHighlight } from '../owners';
+import { NERC_REGION_SEARCH, STATE_SEARCH, createAttributeHighlight } from '../attributeSearch';
 import { createTraceHighlight, TraceableLayerId } from '../networkTrace';
 import { ActiveHighlight } from '../types/gis';
 import { LayerManager } from './LayerManager';
 import { FeatureTooltip } from './FeatureTooltip';
-import { OwnerSearch } from './OwnerSearch';
+import { InvestigatePanel, InvestigateMode } from './InvestigatePanel';
 import { TracePanel } from './TracePanel';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -63,22 +64,28 @@ export const GISMapContainer: React.FC = () => {
   const trace = useNetworkTrace();
   const [hoverInfo, setHoverInfo] = useState<any>(null);
   const [pinnedInfo, setPinnedInfo] = useState<any>(null);
-  const [ownerQuery, setOwnerQuery] = useState('');
+  const [investigateMode, setInvestigateMode] = useState<InvestigateMode>('owner');
+  const [investigateQuery, setInvestigateQuery] = useState('');
 
-  // Owner search and network trace are mutually exclusive investigative
-  // modes — starting one clears the other, so layerFactory only ever has
-  // to reason about a single ActiveHighlight at a time.
-  const handleOwnerQueryChange = useCallback(
+  // Owner/NERC-region/state investigation and network trace are mutually
+  // exclusive modes — starting one clears the others, so layerFactory only
+  // ever has to reason about a single ActiveHighlight at a time.
+  const handleInvestigateQueryChange = useCallback(
     (query: string) => {
       if (query && trace.active) trace.clearTrace();
-      setOwnerQuery(query);
+      setInvestigateQuery(query);
     },
     [trace]
   );
 
+  const handleInvestigateModeChange = useCallback((mode: InvestigateMode) => {
+    setInvestigateMode(mode);
+    setInvestigateQuery('');
+  }, []);
+
   const handleTracePlant = useCallback(
     (layerId: TraceableLayerId, plantId: number, plantName: string) => {
-      setOwnerQuery('');
+      setInvestigateQuery('');
       setPinnedInfo(null);
       trace.startTrace(layerId, plantId, plantName);
     },
@@ -88,7 +95,28 @@ export const GISMapContainer: React.FC = () => {
   const handleFilterOwner = useCallback(
     (owner: string) => {
       if (trace.active) trace.clearTrace();
-      setOwnerQuery(owner);
+      setInvestigateMode('owner');
+      setInvestigateQuery(owner);
+      setPinnedInfo(null);
+    },
+    [trace]
+  );
+
+  const handleFilterNercRegion = useCallback(
+    (subregionName: string) => {
+      if (trace.active) trace.clearTrace();
+      setInvestigateMode('nerc-region');
+      setInvestigateQuery(subregionName);
+      setPinnedInfo(null);
+    },
+    [trace]
+  );
+
+  const handleFilterState = useCallback(
+    (state: string) => {
+      if (trace.active) trace.clearTrace();
+      setInvestigateMode('state');
+      setInvestigateQuery(state);
       setPinnedInfo(null);
     },
     [trace]
@@ -103,9 +131,21 @@ export const GISMapContainer: React.FC = () => {
           highlightVersion: trace.revealedMiles,
         };
       }
-      const ownerHighlight = createOwnerHighlight(ownerQuery);
-      return { highlight: ownerHighlight, highlightVersion: ownerQuery };
-    }, [trace.active, trace.sourceLayerId, trace.plantId, trace.revealedLineIds, trace.revealedMiles, trace.result, ownerQuery]);
+      const config = investigateMode === 'nerc-region' ? NERC_REGION_SEARCH : investigateMode === 'state' ? STATE_SEARCH : null;
+      const investigateHighlight = config
+        ? createAttributeHighlight(config, investigateQuery)
+        : createOwnerHighlight(investigateQuery);
+      return { highlight: investigateHighlight, highlightVersion: `${investigateMode}:${investigateQuery}` };
+    }, [
+      trace.active,
+      trace.sourceLayerId,
+      trace.plantId,
+      trace.revealedLineIds,
+      trace.revealedMiles,
+      trace.result,
+      investigateMode,
+      investigateQuery,
+    ]);
 
   const deckLayers = useMemo(
     () => createDeckGLLayers(layers, datasets, categoryFilters, highlight, highlightVersion, setHoverInfo),
@@ -138,7 +178,14 @@ export const GISMapContainer: React.FC = () => {
           onClear={trace.clearTrace}
         />
       ) : (
-        <OwnerSearch layers={layers} datasets={datasets} query={ownerQuery} onQueryChange={handleOwnerQueryChange} />
+        <InvestigatePanel
+          layers={layers}
+          datasets={datasets}
+          mode={investigateMode}
+          onModeChange={handleInvestigateModeChange}
+          query={investigateQuery}
+          onQueryChange={handleInvestigateQueryChange}
+        />
       )}
 
       <DeckGL
@@ -174,6 +221,8 @@ export const GISMapContainer: React.FC = () => {
           properties={pinnedInfo.object.properties}
           pinned
           onFilterOwner={handleFilterOwner}
+          onFilterNercRegion={handleFilterNercRegion}
+          onFilterState={handleFilterState}
           onTracePlant={handleTracePlant}
           onClose={() => setPinnedInfo(null)}
         />

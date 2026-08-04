@@ -72,9 +72,9 @@ export function createDeckGLLayers(
             pointType: 'icon',
             getIcon: () => SQUARE_ICON,
             iconSizeUnits: 'pixels',
-            getIconSize: 6,
-            iconSizeMinPixels: 6,
-            iconSizeMaxPixels: 6,
+            getIconSize: 12,
+            iconSizeMinPixels: 12,
+            iconSizeMaxPixels: 12,
             getIconColor: (f: any) => {
               const props = f.properties as AutoPlantProperties;
               return [...hexToRgb(autoPlantColorHex(props.facility_type)), highlightAlpha(220, isMatch(f), isExempt(f), highlightActive)];

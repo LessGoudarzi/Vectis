@@ -149,12 +149,12 @@ export const LayerManager: React.FC<LayerManagerProps> = ({
                           key={entry.label}
                           onClick={() => onToggleCategory(lyr.id, entry.label)}
                           aria-pressed={isActive}
-                          className={`flex items-center gap-1.5 rounded px-1 py-0.5 text-left hover:bg-slate-700/60 ${
-                            isActive ? '' : 'opacity-40'
-                          }`}
+                          className="flex items-center gap-1.5 rounded px-1 py-0.5 text-left hover:bg-slate-600/80"
                         >
                           <span
-                            className="h-2.5 w-2.5 shrink-0 rounded-full border border-white/20"
+                            className={`h-2.5 w-2.5 shrink-0 rounded-full border border-white/20 ${
+                              isActive ? '' : 'opacity-40'
+                            }`}
                             style={{ backgroundColor: entry.colorHex }}
                           />
                           <span

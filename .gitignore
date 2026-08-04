@@ -33,3 +33,6 @@ power/jurisdiction_nerc_subregion_v1/
 
 # Large JSON exports generated from source packages
 power/**/*.gpkg.json
+
+# Local data backup/catalog (gzip copies of input + output datasets)
+/data_backup/

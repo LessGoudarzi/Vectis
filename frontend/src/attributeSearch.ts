@@ -32,7 +32,13 @@ export function featureMatchesAttributeQuery(
 ): boolean {
   if (!query.trim()) return true;
   const value = getFeatureAttributeValue(config, layerId, properties);
-  return value ? value.toLowerCase().includes(query.trim().toLowerCase()) : false;
+  // The property value above is run through config.normalize (e.g. EIA's
+  // "Texas" -> "TX") before matching, so the query has to go through the
+  // same normalization or it never matches — otherwise clicking a power
+  // plant's "Filter to state: Texas" button compares "TX".includes("texas"),
+  // which is always false.
+  const normalizedQuery = config.normalize ? config.normalize(query.trim()) : query.trim();
+  return value ? value.toLowerCase().includes(normalizedQuery.toLowerCase()) : false;
 }
 
 // Every distinct value across every layer's already-fetched dataset, for

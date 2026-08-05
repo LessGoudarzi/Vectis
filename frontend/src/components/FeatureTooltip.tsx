@@ -34,7 +34,16 @@ const HIDDEN_KEYS = new Set(['geom']);
 // fields (voltage, capacity, etc.) instead of null.
 const MISSING_NUMBER_SENTINEL = -999999;
 
+// Overrides for keys whose mechanical title-casing reads poorly —
+// source_des in particular ("Source Des") doesn't convey that it's the
+// full multi-fuel breakdown (e.g. "Coal = 458 MW, Solar = 12.5 MW"),
+// unlike fuel_type which is just the single dominant bucket.
+const KEY_LABELS: Record<string, string> = {
+  source_des: 'Fuel Sources',
+};
+
 function toTitleCase(key: string): string {
+  if (KEY_LABELS[key]) return KEY_LABELS[key];
   return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 

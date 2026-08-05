@@ -77,6 +77,9 @@ export interface PowerPlantProperties {
   capacity_mw: number | null;
   owner: string;
   state: string;
+  // Full multi-fuel breakdown (e.g. "Coal = 458 MW, Solar = 12.5 MW") —
+  // fuel_type above collapses this down to a single dominant bucket.
+  source_des: string | null;
   subregion_name: string | null;
 }
 

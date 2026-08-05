@@ -134,7 +134,7 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         """
         CREATE TABLE power_plants (
             id INTEGER, plant_name TEXT, fuel_type TEXT, capacity_mw DOUBLE,
-            owner TEXT, state TEXT, subregion_name TEXT, geom GEOMETRY
+            owner TEXT, state TEXT, source_des TEXT, subregion_name TEXT, geom GEOMETRY
         )
         """
     )
@@ -181,14 +181,15 @@ def build_power_grid_tables(conn: duckdb.DuckDBPyConnection, sqlite_db_path: Pat
         )
 
     plant_rows = _load_sqlite_rows(
-        sqlite_db_path, "power_plants", ["id", "plant_name", "fuel_type", "capacity_mw", "owner", "state"]
+        sqlite_db_path, "power_plants", ["id", "plant_name", "fuel_type", "capacity_mw", "owner", "state", "source_des"]
     )
     if plant_rows:
         conn.executemany(
-            "INSERT INTO power_plants VALUES (?, ?, ?, ?, ?, ?, NULL, ST_GeomFromGeoJSON(?))",
+            "INSERT INTO power_plants VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ST_GeomFromGeoJSON(?))",
             [
                 (
                     row["id"], row["plant_name"], row["fuel_type"], row["capacity_mw"], row["owner"], row["state"],
+                    row["source_des"],
                     json.dumps(_reproject_geometry(json.loads(row["geojson_geom"]))),
                 )
                 for row in plant_rows

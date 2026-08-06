@@ -5,13 +5,13 @@ import { LAYER_LEGENDS } from '../legends';
 export const INITIAL_LAYERS: LayerConfig[] = [
   // zIndex 0 = rendered first/bottom-most, beneath every data layer —
   // background context, not something that should ever obscure real data.
-  // Only NERC subregions load visible by default; the rest are opt-in via
-  // the sidebar so the initial view isn't paying to fetch/render everything.
+  // Data layers (auto-plants, power-grid, power-plants, substations) load
+  // visible by default so features appear on map load.
   { id: 'nerc-subregions', name: 'NERC Subregions', visible: true, opacity: 0.5, colorHex: '#38BDF8', zIndex: 0, legendVisible: false },
-  { id: 'power-grid', name: 'Transmission Lines', visible: false, opacity: 0.8, colorHex: '#06B6D4', zIndex: 1, legendVisible: true },
-  { id: 'substations', name: 'Substations', visible: false, opacity: 0.9, colorHex: '#FBBF24', zIndex: 2, legendVisible: true },
-  { id: 'auto-plants', name: 'Automobile Manufacturing Facilities', visible: false, opacity: 0.9, colorHex: '#F59E0B', zIndex: 3, legendVisible: true },
-  { id: 'power-plants', name: 'Power Plants', visible: false, opacity: 0.9, colorHex: '#22C55E', zIndex: 4, legendVisible: true },
+  { id: 'power-grid', name: 'Transmission Lines', visible: true, opacity: 0.8, colorHex: '#06B6D4', zIndex: 1, legendVisible: true },
+  { id: 'substations', name: 'Substations', visible: true, opacity: 0.9, colorHex: '#FBBF24', zIndex: 2, legendVisible: true },
+  { id: 'auto-plants', name: 'Automobile Manufacturing Facilities', visible: true, opacity: 0.9, colorHex: '#F59E0B', zIndex: 3, legendVisible: true },
+  { id: 'power-plants', name: 'Power Plants', visible: true, opacity: 0.9, colorHex: '#22C55E', zIndex: 4, legendVisible: true },
 ];
 
 function allCategoryLabels(id: LayerId): Set<string> {

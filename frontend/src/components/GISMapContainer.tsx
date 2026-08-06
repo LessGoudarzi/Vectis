@@ -7,7 +7,13 @@ import { useGISData } from '../hooks/useGISData';
 import { useNetworkTrace } from '../hooks/useNetworkTrace';
 import { createDeckGLLayers } from '../layers/layerFactory';
 import { createOwnerHighlight } from '../owners';
-import { NERC_REGION_SEARCH, STATE_SEARCH, createAttributeHighlight } from '../attributeSearch';
+import {
+  NERC_REGION_SEARCH,
+  STATE_SEARCH,
+  PROCESS_SEARCH,
+  DEFENSE_WORK_SEARCH,
+  createAttributeHighlight,
+} from '../attributeSearch';
 import { createTraceHighlight, TraceableLayerId } from '../networkTrace';
 import { ActiveHighlight } from '../types/gis';
 import { LayerManager } from './LayerManager';
@@ -193,7 +199,16 @@ export const GISMapContainer: React.FC = () => {
           highlightVersion: trace.revealedMiles,
         };
       }
-      const config = investigateMode === 'nerc-region' ? NERC_REGION_SEARCH : investigateMode === 'state' ? STATE_SEARCH : null;
+      const config =
+        investigateMode === 'nerc-region'
+          ? NERC_REGION_SEARCH
+          : investigateMode === 'state'
+          ? STATE_SEARCH
+          : investigateMode === 'process'
+          ? PROCESS_SEARCH
+          : investigateMode === 'defense-history'
+          ? DEFENSE_WORK_SEARCH
+          : null;
       const investigateHighlight = config
         ? createAttributeHighlight(config, investigateQuery)
         : createOwnerHighlight(investigateQuery);
@@ -302,6 +317,14 @@ export const GISMapContainer: React.FC = () => {
         <Map
           mapboxAccessToken={MAPBOX_TOKEN}
           mapStyle="mapbox://styles/mapbox/dark-v11"
+          // Mercator, not globe: deck.gl's GeoJsonLayer overlay (below) is
+          // always flat-Mercator-projected regardless of the basemap's
+          // projection — it has no concept of the globe's curvature. Mapbox
+          // interpolates globe -> mercator between zoom 3-5, and this app's
+          // default zoom (4) sits right in that band, so a globe projection
+          // here made every data layer visibly float above/misalign with
+          // the curved basemap. Mercator keeps both flat at every zoom.
+          projection={{ name: 'mercator' }}
           reuseMaps
           onLoad={recolorBasemap}
           onStyleData={recolorBasemap}

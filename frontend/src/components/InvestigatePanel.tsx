@@ -5,11 +5,14 @@ import { collectDistinctOwners, countMatchesByLayer } from '../owners';
 import {
   NERC_REGION_SEARCH,
   STATE_SEARCH,
+  PROCESS_SEARCH,
+  DEFENSE_WORK_SEARCH,
   collectDistinctAttributeValues,
+  collectDistinctMultiValues,
   countAttributeMatchesByLayer,
 } from '../attributeSearch';
 
-export type InvestigateMode = 'owner' | 'nerc-region' | 'state';
+export type InvestigateMode = 'owner' | 'nerc-region' | 'state' | 'process' | 'defense-history';
 
 interface InvestigatePanelProps {
   layers: LayerConfig[];
@@ -24,30 +27,29 @@ const MODE_LABEL: Record<InvestigateMode, string> = {
   owner: 'Owner',
   'nerc-region': 'NERC Region',
   state: 'State',
+  process: 'Process',
+  'defense-history': 'Defense History',
 };
 
 const MODE_PLACEHOLDER: Record<InvestigateMode, string> = {
   owner: 'e.g. Ford, Tennessee Valley Authority...',
   'nerc-region': 'e.g. EAST (RFCE), CALIFORNIA (CAMX)...',
   state: 'e.g. Michigan, TX...',
+  process: 'e.g. welding, body in white, battery...',
+  'defense-history': 'e.g. WWII, ITAR, prior defense contract...',
 };
 
-// Which layers each mode actually searches across — differs per mode
-// because not every layer carries an owner/subregion/state field (see
-// owners.ts and attributeSearch.ts for the per-layer field maps).
 const MODE_DESCRIPTION: Record<InvestigateMode, string> = {
   owner: 'Transmission Lines, Power Plants, Substations (inferred), and Auto Facilities',
   'nerc-region': 'Transmission Lines, Power Plants, Substations, Auto Facilities, and NERC Subregions',
   state: 'Transmission Lines (inferred), Power Plants, Substations, and Auto Facilities',
+  process: 'Auto Facilities by manufacturing process (welding, painting, battery assembly, etc.)',
+  'defense-history': 'Auto Facilities with documented prior defense or ITAR/export-control work',
 };
 
 const MAX_SUGGESTIONS = 8;
 
-// Owner names are a large, open-ended set (best explored by typing +
-// autocomplete); NERC regions and states are small closed sets already
-// fully known once their backing layers are loaded, so those two modes
-// get a plain dropdown of every distinct value instead.
-const DROPDOWN_MODES = new Set<InvestigateMode>(['nerc-region', 'state']);
+const DROPDOWN_MODES = new Set<InvestigateMode>(['nerc-region', 'state', 'process', 'defense-history']);
 
 export const InvestigatePanel: React.FC<InvestigatePanelProps> = ({
   layers,
@@ -68,6 +70,8 @@ export const InvestigatePanel: React.FC<InvestigatePanelProps> = ({
   // so this is a client-side scan rather than a network round-trip.
   const distinctValues = useMemo(() => {
     if (mode === 'owner') return collectDistinctOwners(datasets);
+    if (mode === 'process') return collectDistinctMultiValues(PROCESS_SEARCH, datasets, ';');
+    if (mode === 'defense-history') return collectDistinctAttributeValues(DEFENSE_WORK_SEARCH, datasets);
     return collectDistinctAttributeValues(mode === 'nerc-region' ? NERC_REGION_SEARCH : STATE_SEARCH, datasets);
   }, [mode, datasets]);
 
@@ -83,6 +87,8 @@ export const InvestigatePanel: React.FC<InvestigatePanelProps> = ({
   const matchCounts = useMemo(() => {
     if (!trimmed) return {};
     if (mode === 'owner') return countMatchesByLayer(datasets, trimmed);
+    if (mode === 'process') return countAttributeMatchesByLayer(PROCESS_SEARCH, datasets, trimmed);
+    if (mode === 'defense-history') return countAttributeMatchesByLayer(DEFENSE_WORK_SEARCH, datasets, trimmed);
     return countAttributeMatchesByLayer(mode === 'nerc-region' ? NERC_REGION_SEARCH : STATE_SEARCH, datasets, trimmed);
   }, [mode, datasets, trimmed]);
 

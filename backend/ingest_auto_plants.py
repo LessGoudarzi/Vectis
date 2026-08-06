@@ -53,23 +53,62 @@ def _classify_facility_type(entry: dict, products: list) -> str:
 def _flatten_record(entry: dict) -> tuple | None:
     location = entry.get("location") or {}
     coordinates = location.get("coordinates") or {}
-    lat, lon = coordinates.get("lat"), coordinates.get("lon")
+    lat, lon = coordinates.get("lat") or entry.get("latitude"), coordinates.get("lon") or entry.get("longitude")
     if lat is None or lon is None:
         return None
 
     products = entry.get("products") or []
-    conversion_profile = entry.get("defense_conversion_profile") or {}
+    dcp = entry.get("defense_conversion_profile") or {}
+    pc = dcp.get("production_capabilities") or {}
+    ws = dcp.get("workforce_and_skills") or {}
+    hdu = dcp.get("historical_or_current_dual_use") or {}
+
+    current_procs = pc.get("current_processes") or []
+    if isinstance(current_procs, list):
+        procs_str = "; ".join(str(p).strip() for p in current_procs if p)
+    else:
+        procs_str = str(current_procs)
+
+    proc_cats = entry.get("process_categories") or []
+    if isinstance(proc_cats, list):
+        proc_cats_str = "; ".join(str(c).strip() for c in proc_cats if c)
+    else:
+        proc_cats_str = str(proc_cats)
+
+    data_gaps = dcp.get("data_gaps") or []
+    if isinstance(data_gaps, list):
+        data_gaps_str = "; ".join(str(g).strip() for g in data_gaps if g)
+    else:
+        data_gaps_str = str(data_gaps)
+
+    cleanroom = pc.get("cleanroom_or_controlled_environment")
+    has_cleanroom = entry.get("has_cleanroom")
+    if has_cleanroom is None and cleanroom:
+        cleanroom_lower = str(cleanroom).lower()
+        has_cleanroom = "yes" in cleanroom_lower or "dry room" in cleanroom_lower
+
+    tier_desc = entry.get("defense_conversion_tier") or "Tier 1: OEM Flagship Assembly"
 
     return (
-        str(entry.get("facility_name") or "Unknown"),
+        str(entry.get("facility_name") or entry.get("name") or "Unknown"),
         str(entry.get("oem_or_parent") or "Unknown"),
-        _classify_facility_type(entry, products),
-        str(entry.get("state_abbr") or ""),
+        str(entry.get("facility_type") or _classify_facility_type(entry, products)),
+        str(entry.get("state_abbr") or entry.get("state") or ""),
         str(entry.get("status") or "Unknown"),
         ", ".join(str(p) for p in products) if products else None,
         entry.get("approximate_employment"),
         entry.get("annual_capacity_estimate"),
-        conversion_profile.get("conversion_indicators_summary"),
+        dcp.get("conversion_indicators_summary"),
+        procs_str if procs_str else None,
+        proc_cats_str if proc_cats_str else None,
+        tier_desc,
+        str(pc.get("existing_automation_and_robotics") or "Unknown"),
+        str(cleanroom or "No"),
+        bool(has_cleanroom),
+        str(ws.get("union_status_and_flexibility_notes") or "Unknown"),
+        str(hdu.get("prior_defense_work") or "None identified"),
+        str(hdu.get("ITAR_or_export_control_experience") or "Unknown"),
+        data_gaps_str if data_gaps_str else None,
         float(lon),
         float(lat),
     )
@@ -99,7 +138,11 @@ def build_auto_plants_table(conn: duckdb.DuckDBPyConnection, json_path: Path) ->
         CREATE TABLE auto_plants (
             id INTEGER, facility_name TEXT, oem_or_parent TEXT, facility_type TEXT,
             state TEXT, status TEXT, products TEXT, approximate_employment INTEGER,
-            annual_capacity_estimate TEXT, conversion_summary TEXT, subregion_name TEXT, geom GEOMETRY
+            annual_capacity_estimate TEXT, conversion_summary TEXT,
+            current_processes TEXT, process_categories TEXT, defense_conversion_tier TEXT,
+            automation_level TEXT, cleanroom_specs TEXT,
+            has_cleanroom BOOLEAN, union_notes TEXT, prior_defense_work TEXT,
+            itar_experience TEXT, data_gaps TEXT, subregion_name TEXT, geom GEOMETRY
         )
         """
     )
@@ -117,8 +160,11 @@ def build_auto_plants_table(conn: duckdb.DuckDBPyConnection, json_path: Path) ->
             INSERT INTO auto_plants (
                 id, facility_name, oem_or_parent, facility_type, state, status,
                 products, approximate_employment, annual_capacity_estimate,
-                conversion_summary, subregion_name, geom
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ST_Point(?, ?))
+                conversion_summary, current_processes, process_categories,
+                defense_conversion_tier, automation_level, cleanroom_specs,
+                has_cleanroom, union_notes, prior_defense_work, itar_experience,
+                data_gaps, subregion_name, geom
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ST_Point(?, ?))
             """,
             [(i + 1, *rec) for i, rec in enumerate(records)],
         )

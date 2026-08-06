@@ -32,13 +32,21 @@ export function featureMatchesAttributeQuery(
 ): boolean {
   if (!query.trim()) return true;
   const value = getFeatureAttributeValue(config, layerId, properties);
-  // The property value above is run through config.normalize (e.g. EIA's
-  // "Texas" -> "TX") before matching, so the query has to go through the
-  // same normalization or it never matches — otherwise clicking a power
-  // plant's "Filter to state: Texas" button compares "TX".includes("texas"),
-  // which is always false.
   const normalizedQuery = config.normalize ? config.normalize(query.trim()) : query.trim();
-  return value ? value.toLowerCase().includes(normalizedQuery.toLowerCase()) : false;
+  const needle = normalizedQuery.toLowerCase();
+  
+  if (!value) return false;
+
+  // For multi-value semicolon-delimited fields like process_categories
+  // or current_processes ("Body in White & Structural Welding; Final Assembly..."),
+  // match if any individual trimmed process token matches the query.
+  if (value.includes(';')) {
+    return value
+      .split(';')
+      .some((part) => part.trim().toLowerCase().includes(needle));
+  }
+
+  return value.toLowerCase().includes(needle);
 }
 
 // Every distinct value across every layer's already-fetched dataset, for
@@ -113,18 +121,10 @@ const STATE_NAME_TO_ABBR: Record<string, string> = {
   'virgin islands': 'VI', 'northern mariana islands': 'MP',
 };
 
-function normalizeStateValue(value: string): string {
+export function normalizeStateValue(value: string): string {
   return (STATE_NAME_TO_ABBR[value.trim().toLowerCase()] ?? value).toUpperCase();
 }
 
-// HIFLD's transmission-line records carry no state property at all, so
-// power_grid's state here is inferred backend-side from the nearest
-// substation within a small buffer (see
-// _infer_line_state_from_nearby_substations in ingest_power_grid.py) —
-// best-effort/approximate, not authoritative, since a line can span into
-// a neighboring state past whichever substation happens to be closest.
-// nerc_subregions has no state concept at all, so it's the only layer
-// omitted here.
 export const STATE_SEARCH: AttributeSearchConfig = {
   fieldByLayer: {
     'power-grid': 'state',
@@ -134,4 +134,40 @@ export const STATE_SEARCH: AttributeSearchConfig = {
   },
   invalidValues: new Set(['NOT AVAILABLE', 'Unknown', '']),
   normalize: normalizeStateValue,
+};
+
+// Processes may be stored as semicolon-delimited strings (e.g. "welding (robotic); body in white")
+export function collectDistinctMultiValues(
+  config: AttributeSearchConfig,
+  datasets: Record<string, any>,
+  delimiter = ';'
+): string[] {
+  const seen = new Set<string>();
+  (Object.keys(datasets) as LayerId[]).forEach((layerId) => {
+    const features = datasets[layerId]?.features ?? [];
+    for (const feature of features) {
+      const raw = getFeatureAttributeValue(config, layerId, feature.properties);
+      if (raw) {
+        raw.split(delimiter).forEach((part) => {
+          const item = part.trim();
+          if (item) seen.add(item);
+        });
+      }
+    }
+  });
+  return Array.from(seen).sort((a, b) => a.localeCompare(b));
+}
+
+export const PROCESS_SEARCH: AttributeSearchConfig = {
+  fieldByLayer: {
+    'auto-plants': 'process_categories',
+  },
+  invalidValues: new Set(['Unknown', '', 'None']),
+};
+
+export const DEFENSE_WORK_SEARCH: AttributeSearchConfig = {
+  fieldByLayer: {
+    'auto-plants': 'prior_defense_work',
+  },
+  invalidValues: new Set(['Unknown', '', 'none identified in open sources', 'none']),
 };

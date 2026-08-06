@@ -54,20 +54,18 @@ export function fuelColorHex(fuelType: string | null | undefined): string {
   return FUEL_COLOR_BY_LABEL[fuelType ?? ''] ?? '#64748b';
 }
 
-// Matches backend/ingest_auto_plants.py's NAICS_CLASSIFICATION labels
-// (derived from the "NAICS: ######" code embedded in each facility's
-// products field), not the source data's own coarse facility_type.
+// Automobile Manufacturing Facilities selection items on the LHS sidebar,
+// categorized by major manufacturing role across the high-yield defense
+// dataset (see process_taxonomy.py's CURATED_FACILITY_TYPE_MAP / NAICS_TIER_MAP
+// for how facility_type is derived). "Other Major Component" covers a small,
+// genuinely heterogeneous set (foundries, a lithium refinery, an HVAC/motor
+// plant) that doesn't share a manufacturing role with the other four buckets.
 export const AUTO_PLANTS_LEGEND: LegendEntry[] = [
-  { label: 'OEM Assembly (Automobile)', colorHex: '#F59E0B' },
-  { label: 'OEM Assembly (Light Truck/SUV)', colorHex: '#fb923c' },
-  { label: 'Body Manufacturing (Tier 1)', colorHex: '#a855f7' },
-  { label: 'Engine & Engine Parts (Tier 1/2)', colorHex: '#ef4444' },
-  { label: 'Electrical & Electronics (Tier 1/2)', colorHex: '#eab308' },
-  { label: 'Steering & Suspension (Tier 1/2)', colorHex: '#06b6d4' },
-  { label: 'Brake Systems (Tier 1/2)', colorHex: '#ec4899' },
-  { label: 'Transmission & Powertrain (Tier 1/2)', colorHex: '#3b82f6' },
-  { label: 'Metal Stamping (Tier 1/2)', colorHex: '#6366f1' },
-  { label: 'Other Vehicle Parts (Tier 1/2)', colorHex: '#64748b' },
+  { label: 'OEM Assembly', colorHex: '#F59E0B' },
+  { label: 'Engine & Powertrain', colorHex: '#ef4444' },
+  { label: 'Metal Stamping & Body', colorHex: '#6366f1' },
+  { label: 'Battery & Energy Storage', colorHex: '#10b981' },
+  { label: 'Other Major Component', colorHex: '#a855f7' },
 ];
 
 const AUTO_PLANTS_COLOR_BY_LABEL: Record<string, string> = Object.fromEntries(
@@ -128,7 +126,7 @@ export function getFeatureCategoryLabel(layerId: LayerId, properties: any): stri
     case 'nerc-subregions':
       return NERC_REGION_COLOR_BY_LABEL[properties?.nerc_region] ? properties.nerc_region : 'Unknown';
     case 'auto-plants':
-      return AUTO_PLANTS_COLOR_BY_LABEL[properties?.facility_type] ? properties.facility_type : 'Other Vehicle Parts (Tier 1/2)';
+      return AUTO_PLANTS_COLOR_BY_LABEL[properties?.facility_type] ? properties.facility_type : 'Other Major Component';
     default:
       return 'Unknown';
   }

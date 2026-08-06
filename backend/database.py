@@ -14,7 +14,7 @@ logger = logging.getLogger("uvicorn")
 BASE_DIR = Path(__file__).resolve().parent
 SAMPLE_INDUSTRIAL_CONVERGENCE_DIR = BASE_DIR / "data" / "sample_industrial_convergence"
 POWER_GRID_SQLITE_DB = BASE_DIR.parent / "transmission.db"
-AUTO_PLANTS_JSON = BASE_DIR.parent / "auto_facilities_VECA8.json"
+AUTO_PLANTS_JSON = BASE_DIR.parent / "auto_facilities_high_yield_defense.json"
 
 
 class SpatialDatabase:
@@ -37,9 +37,12 @@ class SpatialDatabase:
         self.trace_graph: GridGraph = load_grid_graph(POWER_GRID_SQLITE_DB, line_length_miles)
 
     def _seed_auto_plants(self):
-        # Layer: real U.S. automobile assembly/component facilities
-        # (72 facilities, incl. defense-conversion research notes),
-        # replacing the old 5-row hardcoded mock.
+        # Layer: real U.S. automobile assembly/component facilities with
+        # defense-conversion research notes. AUTO_PLANTS_JSON is generated
+        # by ../build_high_yield_facilities.py (see that file's docstring) -
+        # currently 72 hand-researched facilities; NAICS-derived scope-up
+        # is blocked on re-geocoding the master source file (its lat/lon
+        # are broken dataset-wide), not on this ingestion code.
         count = build_auto_plants_table(self.conn, AUTO_PLANTS_JSON)
         logger.info(f"Loaded {count} automobile facilities from {AUTO_PLANTS_JSON}")
 

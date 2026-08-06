@@ -14,6 +14,7 @@ import { LayerManager } from './LayerManager';
 import { FeatureTooltip } from './FeatureTooltip';
 import { InvestigatePanel, InvestigateMode } from './InvestigatePanel';
 import { TracePanel } from './TracePanel';
+import { AdminControls } from './AdminControls';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const INITIAL_VIEW_STATE = {
@@ -330,6 +331,8 @@ export const GISMapContainer: React.FC = () => {
           onClose={() => setPinnedInfo(null)}
         />
       )}
+
+      <AdminControls />
     </div>
   );
 };

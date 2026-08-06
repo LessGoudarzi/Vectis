@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from config import settings
-from routers import layers, trace
+from routers import layers, trace, admin
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -22,8 +22,18 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 app.include_router(layers.router)
 app.include_router(trace.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")
 def health_check():
+    return {"status": "healthy", "service": settings.APP_NAME}
+
+
+# Same as /health, but under /api/v1 — the only prefix the frontend's dev
+# proxy (vite.config.ts) and prod reverse proxy (nginx.conf) actually
+# forward to the backend, so the frontend's restart-status poll can reach
+# it under both.
+@app.get("/api/v1/health")
+def health_check_v1():
     return {"status": "healthy", "service": settings.APP_NAME}

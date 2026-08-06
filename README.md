@@ -167,13 +167,15 @@ Key details worth remembering:
 ```text
 vectis/
 ├── backend/                          # FastAPI + DuckDB spatial API (port 8000)
-│   ├── main.py                       # app entrypoint, CORS, GZip middleware, /health
+│   ├── main.py                       # app entrypoint, CORS, GZip middleware, /health, /api/v1/health
+│   ├── config.py                     # pydantic-settings, incl. ADMIN_RESTART_TOKEN
 │   ├── database.py                   # DuckDB seeding orchestration, precision/cache logic
 │   ├── ingest_auto_plants.py         # EPA ECHO JSON → DuckDB, NAICS reclassification
 │   ├── ingest_power_grid.py          # SQLite → DuckDB, real EIA/HIFLD data, NERC tagging
 │   ├── ingest_industrial_convergence.py  # agent payload JSON → DuckDB
 │   ├── trace.py                      # network-trace graph (facility → subregion)
 │   ├── routers/layers.py             # GET /api/v1/layers/{layer_id}, corridor-summary
+│   ├── routers/admin.py              # POST /api/v1/admin/restart-backend (token-gated self-restart)
 │   └── data/
 │       ├── industrial_convergence_payloads/  # real agent-swarm drop dir (empty)
 │       └── sample_industrial_convergence/    # bundled fallback facilities
@@ -183,7 +185,8 @@ vectis/
 │       ├── components/LayerManager.tsx       # layer panel, legends, filters
 │       ├── components/InvestigatePanel.tsx   # search facilities by owner, NERC region, or state
 │       ├── components/TracePanel.tsx         # network trace visualization/playback
-│       ├── components/FeatureTooltip.tsx     # hover/click feature detail popup
+│       ├── components/FeatureTooltip.tsx     # hover/click feature detail popup, filter-to-state/region actions
+│       ├── components/AdminControls.tsx      # restart-backend / restart-frontend buttons
 │       ├── hooks/useGISData.ts               # lazy-loads each layer's GeoJSON
 │       ├── hooks/useLayerState.ts            # visibility/opacity/legend state
 │       ├── hooks/useNetworkTrace.ts          # facility → subregion trace orchestration
@@ -276,6 +279,61 @@ committed `auto_facilities_VECA8.json`, run the root-level pipeline in order:
 `bulk_naics_pipeline.py` (queries EPA ECHO by NAICS code) →
 `separate_tier_entries.py` (splits by supplier tier) → `geocode_google.py`
 (fills missing lat/lon, requires a Google Maps API key).
+
+## Feature tooltip: filters and multi-source fuel
+
+Clicking a feature opens [`FeatureTooltip.tsx`](frontend/src/components/FeatureTooltip.tsx),
+a generic renderer that dumps every property DuckDB returns for that row (no
+per-field allowlist — a new column on the backend just shows up here
+automatically). On top of the raw properties, it adds a few special-cased
+action buttons driven by [`attributeSearch.ts`](frontend/src/attributeSearch.ts):
+
+- **Filter to state** / **Filter to NERC region** — narrows the Investigate
+  search to just that feature's state or subregion. Matching is done by
+  normalizing *both* the typed query and the stored property through the same
+  `config.normalize` function (e.g. `"Texas"` → `"TX"`) before comparing —
+  comparing a normalized value against a raw one was the bug that made the
+  state filter silently match nothing.
+- **Multi-source fuel display** — some power plants report more than one
+  `source_desc` (fuel source) in the underlying EIA data. `source_des` is
+  threaded all the way through from SQLite (`power/ingest_to_sqlite.py`) →
+  DuckDB (`backend/ingest_power_grid.py`) → the tooltip, which labels it
+  "Fuel Sources" via a small `KEY_LABELS` override so it reads naturally
+  instead of as a raw column name.
+
+## Admin controls (restart buttons)
+
+[`AdminControls.tsx`](frontend/src/components/AdminControls.tsx) renders two
+buttons, pinned in a corner of the map:
+
+- **Restart Frontend** — just calls `window.location.reload()`.
+- **Restart Backend** — POSTs to `/api/v1/admin/restart-backend`
+  ([`backend/routers/admin.py`](backend/routers/admin.py)), then polls
+  `/api/v1/health` (up to 3 minutes — a full reload re-ingests all ~189K
+  rows, see [Known gaps](#known-gaps)) and reloads the page once the backend
+  is healthy again, showing an error if it times out.
+
+The restart endpoint is protected by a shared-secret token, not left open:
+
+- It's **disabled by default** (returns `503`) unless `ADMIN_RESTART_TOKEN`
+  is set in `backend/.env` / the environment (see `backend/config.py`).
+- Requests must send that same value in an `X-Admin-Token` header, compared
+  with `secrets.compare_digest` (constant-time, avoids timing attacks); a
+  missing or wrong token gets `401` and a warning-level log entry.
+- On success it doesn't just crash-and-hope-a-supervisor-restarts-it — it
+  schedules `os.execv(sys.executable, [sys.executable, *sys.argv])` as a
+  `BackgroundTask`, which re-execs the same process in place after the `200`
+  response is sent. `uvicorn --reload`'s file watcher does **not** restart on
+  crash, only on file changes, so a real re-exec was necessary rather than
+  relying on that.
+- The frontend polls `/api/v1/health` rather than the pre-existing `/health`
+  route, because only the `/api` prefix is proxied by both Vite's dev server
+  (`vite.config.ts`) and the prod nginx config (`nginx.conf`) — `/health`
+  itself isn't reachable through either from the browser.
+
+Set a long random value for `ADMIN_RESTART_TOKEN` before enabling this in any
+shared/deployed environment; anyone with the token can restart the backend
+process.
 
 ## Known gaps
 
